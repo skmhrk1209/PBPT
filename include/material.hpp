@@ -1,0 +1,5 @@
+#include "material/dielectric.hpp"
+#include "material/emissive.hpp"
+#include "material/lambertian.hpp"
+#include "material/metal.hpp"
+#include "material/utility.hpp"
