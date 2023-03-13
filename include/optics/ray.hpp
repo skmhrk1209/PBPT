@@ -4,9 +4,7 @@
 
 namespace coex::optics {
 template <typename Scalar = double, template <typename, auto> typename Vector = coex::tensor::Vector>
-class Ray {
-public:
-
+struct Ray {
     constexpr Ray() = default;
 
     constexpr Ray(const Vector<Scalar, 3> &position, const Vector<Scalar, 3> &direction, Scalar weight)
@@ -42,8 +40,11 @@ public:
     constexpr auto translate(const auto &translation) { m_position = m_position + translation; }
     constexpr auto translated(const auto &translation) const -> Ray<Scalar, Vector> { return {m_position + translation, m_direction, m_weight}; }
 
-    constexpr auto rotate(const auto &rotation) { m_direction = rotation % m_direction; }
-    constexpr auto rotated(const auto &rotation) const -> Ray<Scalar, Vector> { return {m_position, rotation % m_direction, m_weight}; }
+    constexpr auto rotate(const auto &rotation) {
+        m_position = rotation % m_position;
+        m_direction = rotation % m_direction;
+    }
+    constexpr auto rotated(const auto &rotation) const -> Ray<Scalar, Vector> { return {rotation % m_position, rotation % m_direction, m_weight}; }
 
 private:
 

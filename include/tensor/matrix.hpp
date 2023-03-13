@@ -38,8 +38,8 @@ template <MatrixShaped Matrix, VectorShaped Vector>
 constexpr auto operator%(const Matrix &matrix, const Vector &vector)
 requires(dimension_v<Matrix, 0> == dimension_v<Vector, 0>) && (dimension_v<Matrix, 1> == dimension_v<Vector, 0>)
 {
-    return [&]<auto... Is>(std::index_sequence<Is...>)->Vector { return {dot(get<Is>(matrix), vector)...}; }
-    (std::make_index_sequence<dimension_v<std::decay_t<decltype(matrix)>, 0>>{});
+    return [&]<auto... Is>(std::index_sequence<Is...>) constexpr->Vector { return {dot(get<Is>(matrix), vector)...}; }
+    (std::make_index_sequence<dimension_v<Matrix, 0>>{});
 }
 
 }  // namespace coex::tensor

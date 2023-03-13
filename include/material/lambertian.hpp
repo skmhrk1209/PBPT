@@ -10,9 +10,7 @@
 namespace coex::material {
 
 template <typename Scalar, template <typename, auto> typename Vector = coex::tensor::Vector>
-class Lambertian {
-public:
-
+struct Lambertian {
     constexpr Lambertian() = default;
     constexpr Lambertian(const Vector<Scalar, 3> &reflectance) : m_reflectance(reflectance) {}
     constexpr Lambertian(Vector<Scalar, 3> &&reflectance) : m_reflectance(std::move(reflectance)) {}
@@ -23,21 +21,21 @@ public:
     constexpr const auto &&reflectance() const && { return std::move(m_reflectance); }
 
     constexpr auto operator()(const auto &ray, const auto &normal, auto &generator) const {
-        return [this, &out_position = ray.position(), out_direction = -ray.direction(), &ray, &normal, &generator]() {
+        return [&, &out_position = ray.position(), out_direction = -ray.direction()]() constexpr {
             /****************************************************************
              * BRDF (Bidirectional Reflectance Distribution Fucntion)
              ****************************************************************/
-            auto brdf = [&reflectance = m_reflectance](const auto &out_position, const auto &out_direction, const auto &in_direction) {
-                return reflectance / std::numbers::pi;
+            auto brdf = [&](const auto &out_position, const auto &out_direction, const auto &in_direction) constexpr {
+                return m_reflectance / std::numbers::pi;
             };
             /****************************************************************
              * PDF (Probability Density Function) for Importance Sampling
              ****************************************************************/
-            auto pdf = [&normal](const auto &in_direction) { return coex::tensor::dot(in_direction, normal) / std::numbers::pi; };
+            auto pdf = [&](const auto &in_direction) constexpr { return coex::tensor::dot(in_direction, normal) / std::numbers::pi; };
             /****************************************************************
              * Importance Sampling for Monte Carlo
              ****************************************************************/
-            auto sampler = [&normal, &generator](const auto &out_position, const auto &out_direction) {
+            auto sampler = [&](const auto &out_position, const auto &out_direction) constexpr {
                 auto [coord_x, coord_y, coord_z] = coex::random::cosine_on_unit_semisphere<Scalar, Vector>(generator);
                 auto tangent = coex::tensor::normalized(coex::tensor::cross(normal, Vector<Scalar, 3>{1.0, 0.0, 0.0}));
                 auto bitangent = coex::tensor::cross(normal, tangent);
@@ -47,7 +45,7 @@ public:
              * Rendering Equation
              * Lo := E(wi ~ CDF(wi))[BRDF(x, wi, wo) * Li * (wi · n) / PDF(wi)]
              ****************************************************************/
-            auto shader = [&normal, brdf](const auto &out_position, const auto &out_direction, const auto &in_direction) {
+            auto shader = [&](const auto &out_position, const auto &out_direction, const auto &in_direction) constexpr {
                 return brdf(out_position, out_direction, in_direction) * coex::tensor::dot(in_direction, normal);
             };
             auto in_position = out_position + numbers::epsilon * normal;

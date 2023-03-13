@@ -2,6 +2,8 @@
 
 #include <variant>
 
+#include "tensor.hpp"
+
 namespace coex::material {
 
 template <typename... Materials>
@@ -9,21 +11,21 @@ struct GenericMaterial : std::variant<Materials...> {
     using std::variant<Materials...>::variant;
 
     constexpr auto operator()(auto &&...args) const {
-        return std::visit([&](const auto &material) { return material(std::forward<decltype(args)>(args)...); }, *this);
+        return std::visit([&](const auto &material) constexpr { return material(std::forward<decltype(args)>(args)...); }, *this);
     }
 };
 
 template <typename Scalar, template <typename, auto> typename Vector>
-class Lambertian;
+struct Lambertian;
 
 template <typename Scalar, template <typename, auto> typename Vector>
-class Metal;
+struct Metal;
 
 template <typename Scalar, template <typename, auto> typename Vector>
-class Dielectric;
+struct Dielectric;
 
 template <typename Scalar, template <typename, auto> typename Vector>
-class Emissive;
+struct Emissive;
 
 template <typename Scalar = double, template <typename, auto> typename Vector = coex::tensor::Vector>
 using Material = GenericMaterial<Lambertian<Scalar, Vector>, Metal<Scalar, Vector>, Dielectric<Scalar, Vector>, Emissive<Scalar, Vector>>;

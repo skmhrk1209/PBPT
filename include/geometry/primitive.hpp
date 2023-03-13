@@ -1,2 +1,4 @@
-#include "primitive/primitive.hpp"
-#include "primitive/sphere.hpp"
+#include "primitive/cuboid.hpp"
+#include "primitive/cylinder.hpp"
+#include "primitive/ellipsoid.hpp"
+#include "primitive/plane.hpp"

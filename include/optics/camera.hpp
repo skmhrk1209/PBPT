@@ -10,9 +10,7 @@ namespace coex::optics {
 template <typename Scalar = double, template <typename, auto> typename Vector = coex::tensor::Vector,
           template <typename, auto, auto> typename Matrix = coex::tensor::Matrix,
           typename ResponseFunction = decltype([](const Vector<Scalar, 3> &, const Vector<Scalar, 3> &) -> Scalar {})>
-class Camera {
-public:
-
+struct Camera {
     constexpr Camera() = default;
 
     constexpr Camera(Scalar vertical_fov, Scalar aspect_ratio, Scalar focal_distance, Scalar aperture_radius, ResponseFunction response_function,

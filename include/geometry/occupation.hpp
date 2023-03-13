@@ -5,8 +5,8 @@
 namespace coex::geometry {
 
 template <typename NormalEvaluator, typename MaterialReference>
-struct Surface : std::tuple<NormalEvaluator, MaterialReference> {
-    using std::tuple<NormalEvaluator, MaterialReference>::tuple;
+struct Surface : std::pair<NormalEvaluator, MaterialReference> {
+    using std::pair<NormalEvaluator, MaterialReference>::pair;
 
     constexpr decltype(auto) normal_evaluator() & { return std::get<0>(*this); }
     constexpr decltype(auto) normal_evaluator() && { return std::get<0>(*this); }
@@ -48,5 +48,10 @@ struct Occupation : std::pair<Intersection<Scalar, NormalEvaluator, MaterialRefe
     constexpr decltype(auto) max() const& { return std::get<1>(*this); }
     constexpr decltype(auto) max() const&& { return std::get<1>(*this); }
 };
+
+using OccupationComparator = decltype([](const auto& occupation_1, const auto& occupation_2) constexpr {
+    return occupation_1.min().distance() > occupation_2.min().distance()
+        || (!(occupation_2.min().distance() > occupation_1.min().distance()) && occupation_1.max().distance() > occupation_2.max().distance());
+});
 
 }  // namespace coex::geometry

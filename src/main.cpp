@@ -17,7 +17,6 @@
 #include "image.hpp"
 #include "math.hpp"
 #include "renderer.hpp"
-#include "scene/cornell.hpp"
 #include "scene/weekend.hpp"
 #include "tensor.hpp"
 
@@ -29,8 +28,8 @@ int main(int argc, char** argv) {
     options_description.add_options()("image_width,W", boost::program_options::value<int>()->default_value(1000), "Image width")(
         "image_height,H", boost::program_options::value<int>()->default_value(1000), "Image height")(
         "num_samples,N", boost::program_options::value<int>()->default_value(1000), "Number of samples per pixel for Monte-Carlo")(
-        "continuation,C", boost::program_options::value<float>()->default_value(0.99), "Continuation probability for Russian roulette")(
-        "random_seed,S", boost::program_options::value<int>()->default_value(1), "Random seed for Monte-Carlo sampling")(
+        "bernoulli_p,P", boost::program_options::value<float>()->default_value(0.99), "Continuation probability for Russian roulette")(
+        "random_seed,S", boost::program_options::value<int>()->default_value(__LINE__), "Random seed for Monte-Carlo sampling")(
         "num_threads,T", boost::program_options::value<int>()->default_value(1), "Number of threads for OpenMP")("help,h", "Shows help");
 
     boost::program_options::variables_map variables_map;
@@ -45,7 +44,7 @@ int main(int argc, char** argv) {
     auto image_width = variables_map["image_width"].as<int>();
     auto image_height = variables_map["image_height"].as<int>();
     auto num_samples = variables_map["num_samples"].as<int>();
-    auto continuation = variables_map["continuation"].as<float>();
+    auto bernoulli_p = variables_map["bernoulli_p"].as<float>();
     auto random_seed = variables_map["random_seed"].as<int>();
     auto num_threads = variables_map["num_threads"].as<int>();
 
@@ -85,43 +84,51 @@ int main(int argc, char** argv) {
 
     auto stop_index = start_index + num_split_pixels;
 
-    std::vector<std::size_t> rendered_samples(num_split_pixels);
-    std::vector<std::array<Scalar, 3>> colors(num_split_pixels);
+    auto image = [&]() {
+        std::vector<std::array<Scalar, 3>> colors(num_split_pixels);
+        std::vector<std::size_t> rendered_samples(num_split_pixels);
 
-    auto image_writer = [&](auto global_index, const auto& color) {
-        auto local_index = global_index - start_index;
-        auto prev_color = coex::tensor::elemwise(coex::math::square<Scalar>, coex::tensor::Vector<Scalar, 3>(colors[local_index]));
-        auto next_color = coex::tensor::elemwise(coex::math::sqrt<Scalar>,
-                                                 (prev_color * rendered_samples[local_index] + color) / (rendered_samples[local_index] + 1));
-        colors[local_index] = next_color;
-        ++rendered_samples[local_index];
-    };
+        auto image_writer = [&](auto global_index, const auto& color) constexpr {
+            auto local_index = global_index - start_index;
+            auto prev_color = coex::tensor::elemwise(coex::math::square<Scalar>, coex::tensor::Vector<Scalar, 3>(colors[local_index]));
+            auto next_color = coex::tensor::elemwise(coex::math::sqrt<Scalar>,
+                                                     (prev_color * rendered_samples[local_index] + color) / (rendered_samples[local_index] + 1));
+            colors[local_index] = next_color;
+            ++rendered_samples[local_index];
+        };
 
-    if (communicator.rank()) std::cout.setstate(std::ios_base::badbit);
+        if (communicator.rank()) std::cout.setstate(std::ios_base::badbit);
 
-    boost::progress_timer progress_timer;
-    boost::progress_display progress_display(num_samples);
+        boost::progress_timer progress_timer;
+        boost::progress_display progress_display(num_samples);
 
-    for (auto sample_index = 0; sample_index < num_samples; ++sample_index) {
-        coex::renderer::path_tracer<Scalar, coex::tensor::Vector>(coex::scene::cornell::object, coex::scene::cornell::camera,
-                                                                  coex::scene::cornell::background, image_width, image_height, start_index,
-                                                                  stop_index, continuation, random_seed + sample_index, image_writer);
+        for (auto sample_index = 0; sample_index < num_samples; ++sample_index) {
+            coex::renderer::path_tracer<Scalar, coex::tensor::Vector>(coex::scene::weekend::object, coex::scene::weekend::camera,
+                                                                      coex::scene::weekend::background, image_width, image_height, start_index,
+                                                                      stop_index, bernoulli_p, random_seed + sample_index, image_writer);
 
-        communicator.barrier();
+            communicator.barrier();
 
-        std::vector<decltype(colors)> gathered_colors;
-        if (!communicator.rank()) gathered_colors.resize(communicator.size());
+            std::vector<decltype(colors)> gathered_colors;
+            if (!communicator.rank()) gathered_colors.resize(communicator.size());
 
-        boost::mpi::gather(communicator, colors, gathered_colors, 0);
+            boost::mpi::gather(communicator, colors, gathered_colors, 0);
 
-        if (!communicator.rank()) {
-            auto image = gathered_colors | std::views::join;
-            using namespace std::literals::string_literals;
-            std::filesystem::path filename = "outputs/"s + std::to_string(sample_index) + ".ppm"s;
-            std::filesystem::create_directories(filename.parent_path());
-            coex::image::write_ppm(filename, image, image_width, image_height);
+            if (!communicator.rank()) {
+                auto image = gathered_colors | std::views::join;
+                using namespace std::literals::string_literals;
+                std::filesystem::path filename = "outputs/"s + std::to_string(sample_index) + ".ppm"s;
+                std::filesystem::create_directories(filename.parent_path());
+                coex::image::write_ppm(filename, image, image_width, image_height);
+            }
+
+            ++progress_display;
         }
 
-        ++progress_display;
-    }
+        return colors;
+    }();
+
+    std::filesystem::path filename = "outputs/image.ppm";
+    std::filesystem::create_directories(filename.parent_path());
+    coex::image::write_ppm(filename, image, image_width, image_height);
 }

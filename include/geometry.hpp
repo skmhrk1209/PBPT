@@ -1,4 +1,4 @@
-#include "geometry/binary_op.hpp"
+#include "geometry/csg.hpp"
+#include "geometry/occupation.hpp"
 #include "geometry/primitive.hpp"
-#include "geometry/unary_op.hpp"
-#include "geometry/utility.hpp"
+#include "geometry/transform.hpp"
