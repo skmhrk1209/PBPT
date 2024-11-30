@@ -15,34 +15,34 @@ namespace coex::scene::weekend {
 inline constexpr auto object = []() constexpr {
     using namespace std::literals::complex_literals;
     coex::random::LinearCongruentialGenerator<> generator(__LINE__);
-    return coex::geometry::make_unionizer(
+    return coex::geometry::csg::make_union(
         // ground sphere
-        coex::geometry::make_translator(
-            coex::geometry::make_sphere<>(1000.0, coex::material::make_lambertian<>(coex::tensor::Vector<Scalar, 3>{0.5, 0.5, 0.5})),
+        coex::geometry::transform::make_translation(
+            coex::geometry::primitive::make_ellipsoid<>(coex::tensor::Vector<Scalar, 3>{1000.0, 1000.0, 1000.0}, coex::material::make_lambertian<>(coex::tensor::Vector<Scalar, 3>{0.5, 0.5, 0.5})),
             coex::tensor::Vector<Scalar, 3>{0.0, 1000.0, 0.0}),
-        coex::geometry::make_unionizer(
+        coex::geometry::csg::make_union(
             // left sphere (gold)
-            coex::geometry::make_translator(
-                coex::geometry::make_sphere<>(1.0, coex::material::make_metal<>(coex::tensor::Vector<std::complex<Scalar>, 3>{
+            coex::geometry::transform::make_translation(
+                coex::geometry::primitive::make_ellipsoid<>(coex::tensor::Vector<Scalar, 3>{1.0, 1.0, 1.0}, coex::material::make_metal<>(coex::tensor::Vector<std::complex<Scalar>, 3>{
                                                        0.18299 + 3.42420i,
                                                        0.42108 + 2.34590i,
                                                        1.37340 + 1.77040i,
                                                    })),
                 coex::tensor::Vector<Scalar, 3>{-4.0, -1.0, 0.0}),
-            coex::geometry::make_unionizer(
+            coex::geometry::csg::make_union(
                 // center sphere (glass)
-                coex::geometry::make_translator(coex::geometry::make_sphere<>(1.0, coex::material::make_dielectric<>(1.5)),
+                coex::geometry::transform::make_translation(coex::geometry::primitive::make_ellipsoid<>(coex::tensor::Vector<Scalar, 3>{1.0, 1.0, 1.0}, coex::material::make_dielectric<>(1.5)),
                                                 coex::tensor::Vector<Scalar, 3>{0.0, -1.0, 0.0}),
-                coex::geometry::make_unionizer(
+                coex::geometry::csg::make_union(
                     // right sphere (platinum)
-                    coex::geometry::make_translator(
-                        coex::geometry::make_sphere<>(1.0, coex::material::make_metal<>(coex::tensor::Vector<std::complex<Scalar>, 3>{
+                    coex::geometry::transform::make_translation(
+                        coex::geometry::primitive::make_ellipsoid<>(coex::tensor::Vector<Scalar, 3>{1.0, 1.0, 1.0}, coex::material::make_metal<>(coex::tensor::Vector<std::complex<Scalar>, 3>{
                                                                2.37570 + 4.26550i,
                                                                2.08470 + 3.71530i,
                                                                1.84530 + 3.13650i,
                                                            })),
                         coex::tensor::Vector<Scalar, 3>{4.0, -1.0, 0.0}),
-                    coex::geometry::make_unionizer(
+                    coex::geometry::csg::make_union(
                         // tiny sphere (scatteing only)
                         [function =
                              [&]<auto I, auto... Is>(auto self, std::index_sequence<I, Is...>) constexpr {
@@ -52,29 +52,29 @@ inline constexpr auto object = []() constexpr {
                                      coex::math::square<Scalar>, coex::tensor::Vector<Scalar, 3>{coex::random::uniform(generator, 0.0, 1.0),
                                                                                                  coex::random::uniform(generator, 0.0, 1.0),
                                                                                                  coex::random::uniform(generator, 0.0, 1.0)});
-                                 auto sphere = coex::geometry::make_translator(
-                                     coex::geometry::make_sphere<>(0.2, coex::material::make_lambertian<>(std::move(reflectance))),
+                                 auto sphere = coex::geometry::transform::make_translation(
+                                     coex::geometry::primitive::make_ellipsoid<>(coex::tensor::Vector<Scalar, 3>{0.2, 0.2, 0.2}, coex::material::make_lambertian<>(std::move(reflectance))),
                                      std::move(position));
 
                                  if constexpr (sizeof...(Is))
-                                     return coex::geometry::make_unionizer(std::move(sphere), self(self, std::index_sequence<Is...>{}));
+                                     return coex::geometry::csg::make_union(std::move(sphere), self(self, std::index_sequence<Is...>{}));
                                  else
                                      return sphere;
                              }](auto &&...args) { return function(function, std::forward<decltype(args)>(args)...); }(
                             std::make_index_sequence<400>{}),
-                        coex::geometry::make_unionizer(
+                        coex::geometry::csg::make_union(
                             // tiny sphere (transmission only)
                             [function =
                                  [&]<auto I, auto... Is>(auto self, std::index_sequence<I, Is...>) constexpr {
                                      auto [coord_x, coord_z] = coex::random::uniform_in_unit_circle<>(generator) * 10.0;
                                      auto position = coex::tensor::Vector<Scalar, 3>{coord_x, -0.2, coord_z};
                                      auto refractive_index = coex::random::uniform(generator, 1.0, 2.0);
-                                     auto sphere = coex::geometry::make_translator(
-                                         coex::geometry::make_sphere<>(0.2, coex::material::make_dielectric<>(refractive_index)),
+                                     auto sphere = coex::geometry::transform::make_translation(
+                                         coex::geometry::primitive::make_ellipsoid<>(coex::tensor::Vector<Scalar, 3>{0.2, 0.2, 0.2}, coex::material::make_dielectric<>(refractive_index)),
                                          std::move(position));
 
                                      if constexpr (sizeof...(Is))
-                                         return coex::geometry::make_unionizer(std::move(sphere), self(self, std::index_sequence<Is...>{}));
+                                         return coex::geometry::csg::make_union(std::move(sphere), self(self, std::index_sequence<Is...>{}));
                                      else
                                          return sphere;
                                  }](auto &&...args) { return function(function, std::forward<decltype(args)>(args)...); }(
@@ -88,12 +88,12 @@ inline constexpr auto object = []() constexpr {
                                     coex::random::uniform(generator, 0.0, 5.0) + coex::random::uniform(generator, 0.0, 5.0) * 1i,
                                     coex::random::uniform(generator, 0.0, 5.0) + coex::random::uniform(generator, 0.0, 5.0) * 1i,
                                 };
-                                auto sphere = coex::geometry::make_translator(
-                                    coex::geometry::make_sphere<>(0.2, coex::material::make_metal<>(std::move(refractive_index))),
+                                auto sphere = coex::geometry::transform::make_translation(
+                                    coex::geometry::primitive::make_ellipsoid<>(coex::tensor::Vector<Scalar, 3>{0.2, 0.2, 0.2}, coex::material::make_metal<>(std::move(refractive_index))),
                                     std::move(position));
 
                                 if constexpr (sizeof...(Is))
-                                    return coex::geometry::make_unionizer(std::move(sphere), self(self, std::index_sequence<Is...>{}));
+                                    return coex::geometry::csg::make_union(std::move(sphere), self(self, std::index_sequence<Is...>{}));
                                 else
                                     return sphere;
                             }](auto &&...args) {
