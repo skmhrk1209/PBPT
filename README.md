@@ -32,7 +32,9 @@ mpiexec -np ${NUM_WORKERS} \
 PBPT is released under the MIT license.
 
 ## References
-- [Ray Tracing in One Weekend](https://raytracing.github.io/books/RayTracingInOneWeekend.html)
-- [Physically Based Rendering: From Theory to Implementation](https://pbr-book.org/)
-- [Realistic Image Synthesis Using Photon Mapping](http://www.graphics.stanford.edu/papers/jensen_book/)
+
 - [Real-Time Rendering](https://www.realtimerendering.com/)
+- [Ray Tracing in One Weekend](https://raytracing.github.io/books/RayTracingInOneWeekend.html)
+- [Ray-Traced Constructive Solid Geometry](https://www.cs.rpi.edu/~cutler/classes/advancedgraphics/S19/final_projects/audrey_lorelei.pdf)
+- [Realistic Image Synthesis Using Photon Mapping](http://www.graphics.stanford.edu/papers/jensen_book/)
+- [Physically Based Rendering: From Theory to Implementation](https://pbr-book.org/)
