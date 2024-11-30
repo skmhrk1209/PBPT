@@ -3,7 +3,7 @@
 #include <optional>
 #include <tuple>
 
-namespace coex::geometry::csg {
+namespace pbpt::geometry::csg {
 
 template <typename... Geometries>
 struct Enclosure : std::tuple<Geometries...> {
@@ -46,4 +46,4 @@ constexpr auto make_enclosure(Geometries &&...geometries) {
     return Enclosure<std::decay_t<Geometries>...>(std::forward<Geometries>(geometries)...);
 }
 
-}  // namespace coex::geometry::csg
+}  // namespace pbpt::geometry::csg

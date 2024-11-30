@@ -90,8 +90,8 @@ int main(int argc, char** argv) {
 
         auto image_writer = [&](auto global_index, const auto& color) constexpr {
             auto local_index = global_index - start_index;
-            auto prev_color = coex::tensor::elemwise(coex::math::square<Scalar>, coex::tensor::Vector<Scalar, 3>(colors[local_index]));
-            auto next_color = coex::tensor::elemwise(coex::math::sqrt<Scalar>,
+            auto prev_color = pbpt::tensor::elemwise(pbpt::math::square<Scalar>, pbpt::tensor::Vector<Scalar, 3>(colors[local_index]));
+            auto next_color = pbpt::tensor::elemwise(pbpt::math::sqrt<Scalar>,
                                                      (prev_color * rendered_samples[local_index] + color) / (rendered_samples[local_index] + 1));
             colors[local_index] = next_color;
             ++rendered_samples[local_index];
@@ -103,8 +103,8 @@ int main(int argc, char** argv) {
         boost::progress_display progress_display(num_samples);
 
         for (auto sample_index = 0; sample_index < num_samples; ++sample_index) {
-            coex::renderer::path_tracer<Scalar, coex::tensor::Vector>(coex::scene::weekend::object, coex::scene::weekend::camera,
-                                                                      coex::scene::weekend::background, image_width, image_height, start_index,
+            pbpt::renderer::path_tracer<Scalar, pbpt::tensor::Vector>(pbpt::scene::weekend::object, pbpt::scene::weekend::camera,
+                                                                      pbpt::scene::weekend::background, image_width, image_height, start_index,
                                                                       stop_index, bernoulli_p, random_seed + sample_index, image_writer);
 
             communicator.barrier();
@@ -119,7 +119,7 @@ int main(int argc, char** argv) {
                 using namespace std::literals::string_literals;
                 std::filesystem::path filename = "outputs/"s + std::to_string(sample_index) + ".ppm"s;
                 std::filesystem::create_directories(filename.parent_path());
-                coex::image::write_ppm(filename, image, image_width, image_height);
+                pbpt::image::write_ppm(filename, image, image_width, image_height);
             }
 
             ++progress_display;
@@ -130,5 +130,5 @@ int main(int argc, char** argv) {
 
     std::filesystem::path filename = "outputs/image.ppm";
     std::filesystem::create_directories(filename.parent_path());
-    coex::image::write_ppm(filename, image, image_width, image_height);
+    pbpt::image::write_ppm(filename, image, image_width, image_height);
 }

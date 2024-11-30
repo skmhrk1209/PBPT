@@ -6,7 +6,7 @@
 
 #include "common.hpp"
 
-namespace coex::tensor {
+namespace pbpt::tensor {
 
 // ================================================================
 // class
@@ -265,7 +265,7 @@ requires(rank_v<Tensor> >= 2) && (dimension_v<Tensor, 0> == dimension_v<Tensor, 
 // ================================================================
 // norm
 
-constexpr auto norm(const TensorShaped auto &tensor) { return coex::math::sqrt(dot(tensor, tensor)); }
+constexpr auto norm(const TensorShaped auto &tensor) { return pbpt::math::sqrt(dot(tensor, tensor)); }
 
 constexpr auto normalized(const TensorShaped auto &tensor) { return tensor / norm(tensor); }
 
@@ -282,14 +282,14 @@ constexpr auto elemwise(Function &&function, Tensor &&tensor) {
     }
 }
 
-}  // namespace coex::tensor
+}  // namespace pbpt::tensor
 
 namespace std {  // just for structure biding
 
 template <template <typename, auto> typename Array, typename T, auto... Ns>
-struct tuple_size<coex::tensor::GenericTensor<Array, T, Ns...>> : coex::tensor::dimension<coex::tensor::GenericTensor<Array, T, Ns...>, 0> {};
+struct tuple_size<pbpt::tensor::GenericTensor<Array, T, Ns...>> : pbpt::tensor::dimension<pbpt::tensor::GenericTensor<Array, T, Ns...>, 0> {};
 
 template <auto I, template <typename, auto> typename Array, typename T, auto... Ns>
-struct tuple_element<I, coex::tensor::GenericTensor<Array, T, Ns...>> : coex::tensor::element<coex::tensor::GenericTensor<Array, T, Ns...>, 0> {};
+struct tuple_element<I, pbpt::tensor::GenericTensor<Array, T, Ns...>> : pbpt::tensor::element<pbpt::tensor::GenericTensor<Array, T, Ns...>, 0> {};
 
 }  // namespace std

@@ -2,8 +2,8 @@
 
 #include "tensor.hpp"
 
-namespace coex::optics {
-template <typename Scalar = double, template <typename, auto> typename Vector = coex::tensor::Vector>
+namespace pbpt::optics {
+template <typename Scalar = double, template <typename, auto> typename Vector = pbpt::tensor::Vector>
 struct Ray {
     constexpr Ray() = default;
 
@@ -52,4 +52,4 @@ private:
     Vector<Scalar, 3> m_direction;
     Scalar m_weight;
 };
-}  // namespace coex::optics
+}  // namespace pbpt::optics

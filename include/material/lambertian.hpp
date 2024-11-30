@@ -7,9 +7,9 @@
 #include "random.hpp"
 #include "tensor.hpp"
 
-namespace coex::material {
+namespace pbpt::material {
 
-template <typename Scalar, template <typename, auto> typename Vector = coex::tensor::Vector>
+template <typename Scalar, template <typename, auto> typename Vector = pbpt::tensor::Vector>
 struct Lambertian {
     constexpr Lambertian() = default;
     constexpr Lambertian(const Vector<Scalar, 3> &reflectance) : m_reflectance(reflectance) {}
@@ -31,14 +31,14 @@ struct Lambertian {
             /****************************************************************
              * PDF (Probability Density Function) for Importance Sampling
              ****************************************************************/
-            auto pdf = [&](const auto &in_direction) constexpr { return coex::tensor::dot(in_direction, normal) / std::numbers::pi; };
+            auto pdf = [&](const auto &in_direction) constexpr { return pbpt::tensor::dot(in_direction, normal) / std::numbers::pi; };
             /****************************************************************
              * Importance Sampling for Monte Carlo
              ****************************************************************/
             auto sampler = [&](const auto &out_position, const auto &out_direction) constexpr {
-                auto [coord_x, coord_y, coord_z] = coex::random::cosine_on_unit_semisphere<Scalar, Vector>(generator);
-                auto tangent = coex::tensor::normalized(coex::tensor::cross(normal, Vector<Scalar, 3>{1.0, 0.0, 0.0}));
-                auto bitangent = coex::tensor::cross(normal, tangent);
+                auto [coord_x, coord_y, coord_z] = pbpt::random::cosine_on_unit_semisphere<Scalar, Vector>(generator);
+                auto tangent = pbpt::tensor::normalized(pbpt::tensor::cross(normal, Vector<Scalar, 3>{1.0, 0.0, 0.0}));
+                auto bitangent = pbpt::tensor::cross(normal, tangent);
                 return coord_x * tangent + coord_y * bitangent + coord_z * normal;
             };
             /****************************************************************
@@ -46,7 +46,7 @@ struct Lambertian {
              * Lo := E(wi ~ CDF(wi))[BRDF(x, wi, wo) * Li * (wi · n) / PDF(wi)]
              ****************************************************************/
             auto shader = [&](const auto &out_position, const auto &out_direction, const auto &in_direction) constexpr {
-                return brdf(out_position, out_direction, in_direction) * coex::tensor::dot(in_direction, normal);
+                return brdf(out_position, out_direction, in_direction) * pbpt::tensor::dot(in_direction, normal);
             };
             auto in_position = out_position + numbers::epsilon * normal;
             auto in_direction = sampler(out_position, out_direction);
@@ -62,9 +62,9 @@ private:
     Vector<Scalar, 3> m_reflectance;
 };
 
-template <typename Scalar = double, template <typename, auto> typename Vector = coex::tensor::Vector>
+template <typename Scalar = double, template <typename, auto> typename Vector = pbpt::tensor::Vector>
 constexpr auto make_lambertian(auto &&...args) {
     return Material<Scalar, Vector>(Lambertian<Scalar, Vector>(std::forward<decltype(args)>(args)...));
 }
 
-}  // namespace coex::material
+}  // namespace pbpt::material

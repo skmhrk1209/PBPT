@@ -2,7 +2,7 @@
 
 #include <tuple>
 
-namespace coex {
+namespace pbpt {
 
 // Apply a function to each element of a tuple.
 template <auto... Is>
@@ -20,4 +20,4 @@ constexpr auto for_each(auto &&tuple, auto &&function) {
                   std::make_index_sequence<std::tuple_size_v<decltype(tuple)>>());
 }
 
-}  // namespace coex
+}  // namespace pbpt

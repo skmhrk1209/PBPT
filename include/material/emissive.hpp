@@ -5,9 +5,9 @@
 #include "material.hpp"
 #include "tensor.hpp"
 
-namespace coex::material {
+namespace pbpt::material {
 
-template <typename Scalar = double, template <typename, auto> typename Vector = coex::tensor::Vector>
+template <typename Scalar = double, template <typename, auto> typename Vector = pbpt::tensor::Vector>
 struct Emissive {
     constexpr Emissive() = default;
     constexpr Emissive(const Vector<Scalar, 3> &emission) : m_emission(emission) {}
@@ -25,7 +25,7 @@ struct Emissive {
              * Lo := E(wi ~ CDF(wi))[BRDF(x, wi, wo) * Li * (wi · n) / PDF(wi)]
              ****************************************************************/
             auto emitter = [&](const auto &out_position, const auto &out_direction) constexpr {
-                return m_emission * coex::tensor::dot(out_direction, normal);
+                return m_emission * pbpt::tensor::dot(out_direction, normal);
             };
             auto emittance = emitter(out_position, out_direction);
             return std::make_tuple(emittance * ray.weight(), std::optional<std::decay_t<decltype(ray)>>{});
@@ -37,9 +37,9 @@ private:
     Vector<Scalar, 3> m_emission;
 };
 
-template <typename Scalar = double, template <typename, auto> typename Vector = coex::tensor::Vector>
+template <typename Scalar = double, template <typename, auto> typename Vector = pbpt::tensor::Vector>
 constexpr auto make_emissive(auto &&...args) {
     return Material<Scalar, Vector>(Emissive<Scalar, Vector>(std::forward<decltype(args)>(args)...));
 }
 
-}  // namespace coex::material
+}  // namespace pbpt::material

@@ -11,10 +11,10 @@
 #include "math.hpp"
 #include "tensor.hpp"
 
-namespace coex::geometry::primitive {
+namespace pbpt::geometry::primitive {
 
-template <typename Scalar = double, template <typename, auto> typename Vector = coex::tensor::Vector,
-          template <typename, template <typename, auto> typename> typename Material = coex::material::Material>
+template <typename Scalar = double, template <typename, auto> typename Vector = pbpt::tensor::Vector,
+          template <typename, template <typename, auto> typename> typename Material = pbpt::material::Material>
 struct Plane {
     constexpr Plane() = default;
     constexpr Plane(const Vector<Scalar, 2> &radii, const Material<Scalar, Vector> &material) : m_radii(radii), m_material(material) {}
@@ -70,10 +70,10 @@ private:
     Material<Scalar, Vector> m_material;
 };
 
-template <typename Scalar = double, template <typename, auto> typename Vector = coex::tensor::Vector,
-          template <typename, template <typename, auto> typename> typename Material = coex::material::Material>
+template <typename Scalar = double, template <typename, auto> typename Vector = pbpt::tensor::Vector,
+          template <typename, template <typename, auto> typename> typename Material = pbpt::material::Material>
 constexpr auto make_plane(auto &&...args) {
     return Plane<Scalar, Vector, Material>(std::forward<decltype(args)>(args)...);
 }
 
-}  // namespace coex::geometry::primitive
+}  // namespace pbpt::geometry::primitive

@@ -7,7 +7,7 @@
 #include "algorithm.hpp"
 #include "utility.hpp"
 
-namespace coex {
+namespace pbpt {
 
 template <typename... Ts>
 decltype(auto) operator>>(std::istream &istream, std::tuple<Ts...> &tuple) {
@@ -49,7 +49,7 @@ decltype(auto) operator<<(std::ostream &ostream, const std::variant<T, Ts...> &v
 
 template <typename T>
 decltype(auto) operator>>(std::istream &istream, T &iterable)
-requires(coex::Iterable<T> && !coex::is_string_v<T>)
+requires(pbpt::Iterable<T> && !pbpt::is_string_v<T>)
 {
     for (auto &element : iterable) {
         istream >> element;
@@ -59,7 +59,7 @@ requires(coex::Iterable<T> && !coex::is_string_v<T>)
 
 template <typename T>
 decltype(auto) operator<<(std::ostream &ostream, const T &iterable)
-requires(coex::Iterable<T> && !coex::is_string_v<T>)
+requires(pbpt::Iterable<T> && !pbpt::is_string_v<T>)
 {
     ostream << "[ ";
     for (const auto &element : iterable) {
@@ -69,4 +69,4 @@ requires(coex::Iterable<T> && !coex::is_string_v<T>)
     return ostream;
 }
 
-}  // namespace coex
+}  // namespace pbpt

@@ -2,7 +2,7 @@
 #include <cstdint>
 #include <iostream>
 
-namespace coex::random {
+namespace pbpt::random {
 
 template <typename T = std::int_fast32_t, T A = 48271, T B = 0, T M = 2147483647>
 struct LinearCongruentialGenerator {
@@ -31,4 +31,4 @@ private:
     T x;
 };
 
-}  // namespace coex::random
+}  // namespace pbpt::random

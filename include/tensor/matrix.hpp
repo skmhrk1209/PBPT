@@ -4,7 +4,7 @@
 
 #include "tensor.hpp"
 
-namespace coex::tensor {
+namespace pbpt::tensor {
 
 // ================================================================
 // lazy evaluation
@@ -42,4 +42,4 @@ requires(dimension_v<Matrix, 0> == dimension_v<Vector, 0>) && (dimension_v<Matri
     (std::make_index_sequence<dimension_v<Matrix, 0>>{});
 }
 
-}  // namespace coex::tensor
+}  // namespace pbpt::tensor

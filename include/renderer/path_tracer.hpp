@@ -8,10 +8,10 @@
 #include "random.hpp"
 #include "tensor.hpp"
 
-namespace coex::renderer {
+namespace pbpt::renderer {
 
-template <typename Scalar = double, template <typename, auto> typename Vector = coex::tensor::Vector,
-          typename Generator = coex::random::LinearCongruentialGenerator<>>
+template <typename Scalar = double, template <typename, auto> typename Vector = pbpt::tensor::Vector,
+          typename Generator = pbpt::random::LinearCongruentialGenerator<>>
 constexpr auto path_tracer(const auto &object, const auto &camera, auto background, auto image_width, auto image_height, auto start_index,
                            auto stop_index, auto bernoulli_p, auto random_seed, auto &image_writer) {
 #ifdef _OPENMP
@@ -23,13 +23,13 @@ constexpr auto path_tracer(const auto &object, const auto &camera, auto backgrou
         auto pixel_index_u = pixel_index % image_width;
         auto pixel_index_v = pixel_index / image_width;
 
-        auto pixel_coord_u = (pixel_index_u + coex::random::uniform(generator, -0.5, 0.5)) / image_width;
-        auto pixel_coord_v = (pixel_index_v + coex::random::uniform(generator, -0.5, 0.5)) / image_height;
+        auto pixel_coord_u = (pixel_index_u + pbpt::random::uniform(generator, -0.5, 0.5)) / image_width;
+        auto pixel_coord_v = (pixel_index_v + pbpt::random::uniform(generator, -0.5, 0.5)) / image_height;
 
         auto ray = camera.ray(pixel_coord_u, pixel_coord_v, generator);
 
         auto tracer = [function = [&](auto self, const auto &ray) constexpr -> Vector<Scalar, 3> {
-            if (coex::random::uniform(generator, 0.0, 1.0) > bernoulli_p) return {};
+            if (pbpt::random::uniform(generator, 0.0, 1.0) > bernoulli_p) return {};
 
             auto occupations = object.intersect(ray);
 
@@ -51,4 +51,4 @@ constexpr auto path_tracer(const auto &object, const auto &camera, auto backgrou
     }
 }
 
-}  // namespace coex::renderer
+}  // namespace pbpt::renderer

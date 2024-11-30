@@ -2,7 +2,7 @@
 
 #include <cstdint>
 
-namespace coex::random {
+namespace pbpt::random {
 
 template <typename T = std::int_fast32_t>
 constexpr auto now() {
@@ -10,4 +10,4 @@ constexpr auto now() {
          + static_cast<T>(__TIME__[4] - '0') * 60 + static_cast<T>(__TIME__[6] - '0') * 10 + static_cast<T>(__TIME__[7] - '0');
 }
 
-}  // namespace coex::random
+}  // namespace pbpt::random

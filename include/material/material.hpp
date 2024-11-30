@@ -4,7 +4,7 @@
 
 #include "tensor.hpp"
 
-namespace coex::material {
+namespace pbpt::material {
 
 template <typename... Materials>
 struct GenericMaterial : std::variant<Materials...> {
@@ -27,7 +27,7 @@ struct Dielectric;
 template <typename Scalar, template <typename, auto> typename Vector>
 struct Emissive;
 
-template <typename Scalar = double, template <typename, auto> typename Vector = coex::tensor::Vector>
+template <typename Scalar = double, template <typename, auto> typename Vector = pbpt::tensor::Vector>
 using Material = GenericMaterial<Lambertian<Scalar, Vector>, Metal<Scalar, Vector>, Dielectric<Scalar, Vector>, Emissive<Scalar, Vector>>;
 
-}  // namespace coex::material
+}  // namespace pbpt::material

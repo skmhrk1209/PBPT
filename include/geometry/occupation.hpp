@@ -2,7 +2,7 @@
 
 #include <tuple>
 
-namespace coex::geometry {
+namespace pbpt::geometry {
 
 template <typename NormalEvaluator, typename MaterialReference>
 struct Surface : std::pair<NormalEvaluator, MaterialReference> {
@@ -54,4 +54,4 @@ using OccupationComparator = decltype([](const auto& occupation_1, const auto& o
         || (!(occupation_2.min().distance() > occupation_1.min().distance()) && occupation_1.max().distance() > occupation_2.max().distance());
 });
 
-}  // namespace coex::geometry
+}  // namespace pbpt::geometry

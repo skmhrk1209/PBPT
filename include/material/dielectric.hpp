@@ -7,9 +7,9 @@
 #include "tensor.hpp"
 #include "utility.hpp"
 
-namespace coex::material {
+namespace pbpt::material {
 
-template <typename Scalar = double, template <typename, auto> typename Vector = coex::tensor::Vector>
+template <typename Scalar = double, template <typename, auto> typename Vector = pbpt::tensor::Vector>
 struct Dielectric {
     constexpr Dielectric() = default;
     constexpr Dielectric(Scalar refractive_index) : m_refractive_index(refractive_index) {}
@@ -21,14 +21,14 @@ struct Dielectric {
 
     constexpr auto operator()(const auto &ray, const auto &normal, auto &generator) const {
         return [&, &out_position = ray.position(), out_direction = -ray.direction()]() constexpr {
-            auto cos_theta = coex::tensor::dot(out_direction, normal);
+            auto cos_theta = pbpt::tensor::dot(out_direction, normal);
             auto oriented_normal = cos_theta > 0 ? normal : -normal;
             auto refractive_index = cos_theta > 0 ? m_refractive_index : 1.0 / m_refractive_index;
             return [&, &normal = oriented_normal]() constexpr {
-                auto specular_reflectance = coex::math::square((1.0 - refractive_index) / (1.0 + refractive_index));
+                auto specular_reflectance = pbpt::math::square((1.0 - refractive_index) / (1.0 + refractive_index));
                 auto fresnel_reflectance = schlick_approx(specular_reflectance, std::abs(cos_theta));
-                auto sin_theta = coex::math::sqrt(1.0 - coex::math::square(cos_theta));
-                if (sin_theta > refractive_index || coex::random::uniform(generator, 0.0, 1.0) < fresnel_reflectance) {
+                auto sin_theta = pbpt::math::sqrt(1.0 - pbpt::math::square(cos_theta));
+                if (sin_theta > refractive_index || pbpt::random::uniform(generator, 0.0, 1.0) < fresnel_reflectance) {
                     /****************************************************************
                      * Importance Sampling for Monte Carlo
                      ****************************************************************/
@@ -58,7 +58,7 @@ struct Dielectric {
                      * Lo := E(wi ~ CDF(wi))[BRDF(x, wi, wo) * Li * (wi · n) / PDF(wi)]
                      ****************************************************************/
                     auto shader = [&](const auto &out_position, const auto &out_direction, const auto &in_direction) constexpr -> Vector<Scalar, 3> {
-                        auto transmittance = (1.0 - fresnel_reflectance) * coex::math::square(refractive_index);
+                        auto transmittance = (1.0 - fresnel_reflectance) * pbpt::math::square(refractive_index);
                         return {transmittance, transmittance, transmittance};
                     };
                     auto in_position = out_position - numbers::epsilon * normal;
@@ -77,9 +77,9 @@ private:
     Scalar m_refractive_index;
 };
 
-template <typename Scalar = double, template <typename, auto> typename Vector = coex::tensor::Vector>
+template <typename Scalar = double, template <typename, auto> typename Vector = pbpt::tensor::Vector>
 constexpr auto make_dielectric(auto &&...args) {
     return Material<Scalar, Vector>(Dielectric<Scalar, Vector>(std::forward<decltype(args)>(args)...));
 }
 
-}  // namespace coex::material
+}  // namespace pbpt::material

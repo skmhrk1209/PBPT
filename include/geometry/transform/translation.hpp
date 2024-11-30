@@ -3,9 +3,9 @@
 #include "math.hpp"
 #include "tensor.hpp"
 
-namespace coex::geometry::transform {
+namespace pbpt::geometry::transform {
 
-template <typename Geometry, typename Scalar = double, template <typename, auto> typename Vector = coex::tensor::Vector>
+template <typename Geometry, typename Scalar = double, template <typename, auto> typename Vector = pbpt::tensor::Vector>
 struct Translation {
     constexpr Translation() = default;
 
@@ -50,9 +50,9 @@ private:
     Vector<Scalar, 3> m_translation;
 };
 
-template <typename Geometry, typename Scalar = double, template <typename, auto> typename Vector = coex::tensor::Vector>
+template <typename Geometry, typename Scalar = double, template <typename, auto> typename Vector = pbpt::tensor::Vector>
 constexpr auto make_translation(Geometry &&geometry, auto &&...args) {
     return Translation<std::decay_t<Geometry>, Scalar, Vector>(std::forward<Geometry>(geometry), std::forward<decltype(args)>(args)...);
 }
 
-}  // namespace coex::geometry::transform
+}  // namespace pbpt::geometry::transform

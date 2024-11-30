@@ -3,9 +3,9 @@
 #include "math.hpp"
 #include "tensor.hpp"
 
-namespace coex::geometry::transform {
+namespace pbpt::geometry::transform {
 
-template <typename Geometry, typename Scalar = double, template <typename, auto, auto> typename Matrix = coex::tensor::Matrix>
+template <typename Geometry, typename Scalar = double, template <typename, auto, auto> typename Matrix = pbpt::tensor::Matrix>
 struct Rotation {
     constexpr Rotation() = default;
     constexpr Rotation(const Geometry &geometry, const Matrix<Scalar, 3, 3> &rotation) : m_geometry(geometry), m_rotation(rotation) {}
@@ -22,11 +22,11 @@ struct Rotation {
     constexpr const auto &&rotation() const && { return std::move(m_rotation); }
 
     constexpr auto intersect(const auto &ray) const {
-        auto occupations = m_geometry.intersect(ray.rotated(coex::tensor::transposed(m_rotation)));
+        auto occupations = m_geometry.intersect(ray.rotated(pbpt::tensor::transposed(m_rotation)));
 
         auto rotate_normal = [&]<typename Intersection>(const Intersection &intersection) constexpr -> Intersection {
             auto rotated_normal_evaluator = [this, normal_evaluator = intersection.surface().normal_evaluator()](const auto &position) constexpr {
-                return m_rotation % normal_evaluator(coex::tensor::transposed(m_rotation) % position);
+                return m_rotation % normal_evaluator(pbpt::tensor::transposed(m_rotation) % position);
             };
             typename Intersection::second_type surface(rotated_normal_evaluator, intersection.surface().material_reference());
             return {intersection.distance(), std::move(surface)};
@@ -46,13 +46,13 @@ private:
     Matrix<Scalar, 3, 3> m_rotation;
 };
 
-template <typename Geometry, typename Scalar = double, template <typename, auto, auto> typename Matrix = coex::tensor::Matrix>
+template <typename Geometry, typename Scalar = double, template <typename, auto, auto> typename Matrix = pbpt::tensor::Matrix>
 constexpr auto make_rotation(Geometry &&geometry, auto &&...args) {
     return Rotation<std::decay_t<Geometry>, Scalar, Matrix>(std::forward<Geometry>(geometry), std::forward<decltype(args)>(args)...);
 }
 
-template <typename Scalar = double, template <typename, auto> typename Vector = coex::tensor::Vector,
-          template <typename, auto, auto> typename Matrix = coex::tensor::Matrix>
+template <typename Scalar = double, template <typename, auto> typename Vector = pbpt::tensor::Vector,
+          template <typename, auto, auto> typename Matrix = pbpt::tensor::Matrix>
 constexpr auto make_rotation_matrix(const auto &axis, auto angle) {
     auto [x, y, z] = axis;
     auto cos = std::cos(angle);
@@ -68,4 +68,4 @@ constexpr auto make_rotation_matrix(const auto &axis, auto angle) {
     };
 }
 
-}  // namespace coex::geometry::transform
+}  // namespace pbpt::geometry::transform

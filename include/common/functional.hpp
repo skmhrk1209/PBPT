@@ -2,7 +2,7 @@
 
 #include <functional>
 
-namespace coex {
+namespace pbpt {
 
 template <typename... Ts>
 struct Overloaded : Ts... {
@@ -29,4 +29,4 @@ constexpr decltype(auto) curry(auto &&function) {
 // fixed point combinator for anonymous recursive function
 constexpr decltype(auto) fix(auto &&function) { return curry(function)(function); }
 
-}  // namespace coex
+}  // namespace pbpt

@@ -5,10 +5,10 @@
 #include "ray.hpp"
 #include "tensor.hpp"
 
-namespace coex::optics {
+namespace pbpt::optics {
 
-template <typename Scalar = double, template <typename, auto> typename Vector = coex::tensor::Vector,
-          template <typename, auto, auto> typename Matrix = coex::tensor::Matrix,
+template <typename Scalar = double, template <typename, auto> typename Vector = pbpt::tensor::Vector,
+          template <typename, auto, auto> typename Matrix = pbpt::tensor::Matrix,
           typename ResponseFunction = decltype([](const Vector<Scalar, 3> &, const Vector<Scalar, 3> &) -> Scalar {})>
 struct Camera {
     constexpr Camera() = default;
@@ -72,18 +72,18 @@ struct Camera {
         // ---------------- screen ---------------- //
         auto screen_height = 2.0 * std::tan(m_vertical_fov / 2.0);
         auto screen_width = screen_height * m_aspect_ratio;
-        auto coord_x = coex::math::lerp(coord_u, 0.0, 1.0, -screen_width / 2.0, screen_width / 2.0);
-        auto coord_y = coex::math::lerp(coord_v, 0.0, 1.0, -screen_height / 2.0, screen_height / 2.0);
+        auto coord_x = pbpt::math::lerp(coord_u, 0.0, 1.0, -screen_width / 2.0, screen_width / 2.0);
+        auto coord_y = pbpt::math::lerp(coord_v, 0.0, 1.0, -screen_height / 2.0, screen_height / 2.0);
         // ---------------- defocus ---------------- //
         auto target = m_position + m_orientation % Vector<Scalar, 3>{coord_x, coord_y, 1.0} * m_focal_distance;
-        auto [offset_x, offset_y] = coex::random::uniform_in_unit_circle<Scalar, Vector>(generator) * m_aperture_radius;
+        auto [offset_x, offset_y] = pbpt::random::uniform_in_unit_circle<Scalar, Vector>(generator) * m_aperture_radius;
         auto in_position = m_position + m_orientation % Vector<Scalar, 3>{offset_x, offset_y, 0.0};
-        auto in_direction = coex::tensor::normalized(target - in_position);
+        auto in_direction = pbpt::tensor::normalized(target - in_position);
         // ---------------- sampling ---------------- //
         auto lens_normal = m_orientation % Vector<Scalar, 3>{0.0, 0.0, 1.0};
         auto response = m_response_function(in_direction, lens_normal);
-        auto cos_theta = coex::tensor::dot(in_direction, lens_normal);
-        auto weight = response * coex::math::pow(cos_theta, 4);
+        auto cos_theta = pbpt::tensor::dot(in_direction, lens_normal);
+        auto weight = response * pbpt::math::pow(cos_theta, 4);
         return {std::move(in_position), std::move(in_direction), weight};
     }
 
@@ -98,4 +98,4 @@ private:
     Matrix<Scalar, 3, 3> m_orientation;
 };
 
-}  // namespace coex::optics
+}  // namespace pbpt::optics

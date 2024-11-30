@@ -10,10 +10,10 @@
 #include "math.hpp"
 #include "tensor.hpp"
 
-namespace coex::geometry::primitive {
+namespace pbpt::geometry::primitive {
 
-template <typename Scalar = double, template <typename, auto> typename Vector = coex::tensor::Vector,
-          template <typename, template <typename, auto> typename> typename Material = coex::material::Material>
+template <typename Scalar = double, template <typename, auto> typename Vector = pbpt::tensor::Vector,
+          template <typename, template <typename, auto> typename> typename Material = pbpt::material::Material>
 struct Ellipsoid {
     constexpr Ellipsoid() = default;
     constexpr Ellipsoid(const Vector<Scalar, 3> &radii, const Material<Scalar, Vector> &material) : m_radii(radii), m_material(material) {}
@@ -41,20 +41,20 @@ struct Ellipsoid {
             auto norm_ray_position = ray.position() / m_radii;
             auto norm_ray_direction = ray.direction() / m_radii;
 
-            auto A = coex::tensor::dot(norm_ray_direction, norm_ray_direction);
-            auto B = coex::tensor::dot(norm_ray_direction, norm_ray_position);
-            auto C = coex::tensor::dot(norm_ray_position, norm_ray_position);
+            auto A = pbpt::tensor::dot(norm_ray_direction, norm_ray_direction);
+            auto B = pbpt::tensor::dot(norm_ray_direction, norm_ray_position);
+            auto C = pbpt::tensor::dot(norm_ray_position, norm_ray_position);
             auto D = B * B - A * C + A;
 
             if (D >= 0) {
-                auto min_distance = (-B - coex::math::sqrt(D)) / A;
-                auto max_distance = (-B + coex::math::sqrt(D)) / A;
+                auto min_distance = (-B - pbpt::math::sqrt(D)) / A;
+                auto max_distance = (-B + pbpt::math::sqrt(D)) / A;
                 return std::make_pair(min_distance, max_distance);
             }
             return {};
         };
         auto ellipsoid_normal = [this](const auto &position) constexpr -> Vector<Scalar, 3> {
-            return coex::tensor::normalized(position / coex::tensor::elemwise(coex::math::square<Scalar>, m_radii));
+            return pbpt::tensor::normalized(position / pbpt::tensor::elemwise(pbpt::math::square<Scalar>, m_radii));
         };
 
         OccupationQueue occupations;
@@ -76,10 +76,10 @@ private:
     Material<Scalar, Vector> m_material;
 };
 
-template <typename Scalar = double, template <typename, auto> typename Vector = coex::tensor::Vector,
-          template <typename, template <typename, auto> typename> typename Material = coex::material::Material>
+template <typename Scalar = double, template <typename, auto> typename Vector = pbpt::tensor::Vector,
+          template <typename, template <typename, auto> typename> typename Material = pbpt::material::Material>
 constexpr auto make_ellipsoid(auto &&...args) {
     return Ellipsoid<Scalar, Vector, Material>(std::forward<decltype(args)>(args)...);
 }
 
-}  // namespace coex::geometry::primitive
+}  // namespace pbpt::geometry::primitive
