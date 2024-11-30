@@ -64,12 +64,12 @@ struct element<GenericTensor<Array, T, N, Ns...>, I> : element<GenericTensor<Arr
 
 template <template <typename, auto> typename Array, typename T, auto N, auto... Ns>
 struct element<GenericTensor<Array, T, N, Ns...>, 0> {
-    using type = GenericTensor<Array, T, Ns...>;
+  using type = GenericTensor<Array, T, Ns...>;
 };
 
 template <template <typename, auto> typename Array, typename T, auto N>
 struct element<GenericTensor<Array, T, N>, 0> {
-    using type = T;
+  using type = T;
 };
 
 template <typename T, auto I>
@@ -80,22 +80,22 @@ using element_t = typename element<T, I>::type;
 
 template <auto I, template <typename, auto> typename Array, typename T, auto... Ns>
 constexpr element_t<GenericTensor<Array, T, Ns...>, 0> &get(GenericTensor<Array, T, Ns...> &tensor) {
-    return tensor[I];
+  return tensor[I];
 };
 
 template <auto I, template <typename, auto> typename Array, typename T, auto... Ns>
 constexpr const element_t<GenericTensor<Array, T, Ns...>, 0> &get(const GenericTensor<Array, T, Ns...> &tensor) {
-    return tensor[I];
+  return tensor[I];
 };
 
 template <auto I, template <typename, auto> typename Array, typename T, auto... Ns>
 constexpr element_t<GenericTensor<Array, T, Ns...>, 0> &&get(GenericTensor<Array, T, Ns...> &&tensor) {
-    return std::move(tensor[I]);
+  return std::move(tensor[I]);
 };
 
 template <auto I, template <typename, auto> typename Array, typename T, auto... Ns>
 constexpr const element_t<GenericTensor<Array, T, Ns...>, 0> &&get(const GenericTensor<Array, T, Ns...> &&tensor) {
-    return std::move(tensor[I]);
+  return std::move(tensor[I]);
 };
 
 // ================================================================
@@ -121,22 +121,25 @@ concept Broadcastable = (dimension_v<T, 0> == dimension_v<U, 0>);
 
 template <TensorShaped Tensor1, TensorShaped Tensor2>
 constexpr auto operator+(const Tensor1 &tensor_1, const Tensor2 &tensor_2)
-requires Broadcastable<Tensor1, Tensor2>
+  requires Broadcastable<Tensor1, Tensor2>
 {
-    return [&]<auto... Is>(std::index_sequence<Is...>) constexpr->Tensor1 { return {(get<Is>(tensor_1) + get<Is>(tensor_2))...}; }
-    (std::make_index_sequence<dimension_v<Tensor1, 0>>{});
+  return [&]<auto... Is>(std::index_sequence<Is...>) constexpr -> Tensor1 {
+    return {(get<Is>(tensor_1) + get<Is>(tensor_2))...};
+  }(std::make_index_sequence<dimension_v<Tensor1, 0>>{});
 }
 
 template <TensorShaped Tensor, ScalarShaped Scalar>
 constexpr auto operator+(const Tensor &tensor, Scalar scalar) {
-    return [&]<auto... Is>(std::index_sequence<Is...>) constexpr->Tensor { return {(get<Is>(tensor) + scalar)...}; }
-    (std::make_index_sequence<dimension_v<Tensor, 0>>{});
+  return [&]<auto... Is>(std::index_sequence<Is...>) constexpr -> Tensor {
+    return {(get<Is>(tensor) + scalar)...};
+  }(std::make_index_sequence<dimension_v<Tensor, 0>>{});
 }
 
 template <TensorShaped Tensor, ScalarShaped Scalar>
 constexpr auto operator+(Scalar scalar, const Tensor &tensor) {
-    return [&]<auto... Is>(std::index_sequence<Is...>) constexpr->Tensor { return {(scalar + get<Is>(tensor))...}; }
-    (std::make_index_sequence<dimension_v<Tensor, 0>>{});
+  return [&]<auto... Is>(std::index_sequence<Is...>) constexpr -> Tensor {
+    return {(scalar + get<Is>(tensor))...};
+  }(std::make_index_sequence<dimension_v<Tensor, 0>>{});
 }
 
 constexpr auto operator+(const auto &tensor) { return 0 + tensor; }
@@ -146,22 +149,25 @@ constexpr auto operator+(const auto &tensor) { return 0 + tensor; }
 
 template <TensorShaped Tensor1, TensorShaped Tensor2>
 constexpr auto operator-(const Tensor1 &tensor_1, const Tensor2 &tensor_2)
-requires Broadcastable<Tensor1, Tensor2>
+  requires Broadcastable<Tensor1, Tensor2>
 {
-    return [&]<auto... Is>(std::index_sequence<Is...>) constexpr->Tensor1 { return {(get<Is>(tensor_1) - get<Is>(tensor_2))...}; }
-    (std::make_index_sequence<dimension_v<Tensor1, 0>>{});
+  return [&]<auto... Is>(std::index_sequence<Is...>) constexpr -> Tensor1 {
+    return {(get<Is>(tensor_1) - get<Is>(tensor_2))...};
+  }(std::make_index_sequence<dimension_v<Tensor1, 0>>{});
 }
 
 template <TensorShaped Tensor, ScalarShaped Scalar>
 constexpr auto operator-(const Tensor &tensor, Scalar scalar) {
-    return [&]<auto... Is>(std::index_sequence<Is...>) constexpr->Tensor { return {(get<Is>(tensor) - scalar)...}; }
-    (std::make_index_sequence<dimension_v<Tensor, 0>>{});
+  return [&]<auto... Is>(std::index_sequence<Is...>) constexpr -> Tensor {
+    return {(get<Is>(tensor) - scalar)...};
+  }(std::make_index_sequence<dimension_v<Tensor, 0>>{});
 }
 
 template <TensorShaped Tensor, ScalarShaped Scalar>
 constexpr auto operator-(Scalar scalar, const Tensor &tensor) {
-    return [&]<auto... Is>(std::index_sequence<Is...>) constexpr->Tensor { return {(scalar - get<Is>(tensor))...}; }
-    (std::make_index_sequence<dimension_v<Tensor, 0>>{});
+  return [&]<auto... Is>(std::index_sequence<Is...>) constexpr -> Tensor {
+    return {(scalar - get<Is>(tensor))...};
+  }(std::make_index_sequence<dimension_v<Tensor, 0>>{});
 }
 
 constexpr auto operator-(const auto &tensor) { return 0 - tensor; }
@@ -171,22 +177,25 @@ constexpr auto operator-(const auto &tensor) { return 0 - tensor; }
 
 template <TensorShaped Tensor1, TensorShaped Tensor2>
 constexpr auto operator*(const Tensor1 &tensor_1, const Tensor2 &tensor_2)
-requires Broadcastable<Tensor1, Tensor2>
+  requires Broadcastable<Tensor1, Tensor2>
 {
-    return [&]<auto... Is>(std::index_sequence<Is...>) constexpr->Tensor1 { return {(get<Is>(tensor_1) * get<Is>(tensor_2))...}; }
-    (std::make_index_sequence<dimension_v<Tensor1, 0>>{});
+  return [&]<auto... Is>(std::index_sequence<Is...>) constexpr -> Tensor1 {
+    return {(get<Is>(tensor_1) * get<Is>(tensor_2))...};
+  }(std::make_index_sequence<dimension_v<Tensor1, 0>>{});
 }
 
 template <TensorShaped Tensor, ScalarShaped Scalar>
 constexpr auto operator*(const Tensor &tensor, Scalar scalar) {
-    return [&]<auto... Is>(std::index_sequence<Is...>) constexpr->Tensor { return {(get<Is>(tensor) * scalar)...}; }
-    (std::make_index_sequence<dimension_v<Tensor, 0>>{});
+  return [&]<auto... Is>(std::index_sequence<Is...>) constexpr -> Tensor {
+    return {(get<Is>(tensor) * scalar)...};
+  }(std::make_index_sequence<dimension_v<Tensor, 0>>{});
 }
 
 template <TensorShaped Tensor, ScalarShaped Scalar>
 constexpr auto operator*(Scalar scalar, const Tensor &tensor) {
-    return [&]<auto... Is>(std::index_sequence<Is...>) constexpr->Tensor { return {(scalar * get<Is>(tensor))...}; }
-    (std::make_index_sequence<dimension_v<Tensor, 0>>{});
+  return [&]<auto... Is>(std::index_sequence<Is...>) constexpr -> Tensor {
+    return {(scalar * get<Is>(tensor))...};
+  }(std::make_index_sequence<dimension_v<Tensor, 0>>{});
 }
 
 // ================================================================
@@ -194,22 +203,25 @@ constexpr auto operator*(Scalar scalar, const Tensor &tensor) {
 
 template <TensorShaped Tensor1, TensorShaped Tensor2>
 constexpr auto operator/(const Tensor1 &tensor_1, const Tensor2 &tensor_2)
-requires Broadcastable<Tensor1, Tensor2>
+  requires Broadcastable<Tensor1, Tensor2>
 {
-    return [&]<auto... Is>(std::index_sequence<Is...>) constexpr->Tensor1 { return {(get<Is>(tensor_1) / get<Is>(tensor_2))...}; }
-    (std::make_index_sequence<dimension_v<Tensor1, 0>>{});
+  return [&]<auto... Is>(std::index_sequence<Is...>) constexpr -> Tensor1 {
+    return {(get<Is>(tensor_1) / get<Is>(tensor_2))...};
+  }(std::make_index_sequence<dimension_v<Tensor1, 0>>{});
 }
 
 template <TensorShaped Tensor, ScalarShaped Scalar>
 constexpr auto operator/(const Tensor &tensor, Scalar scalar) {
-    return [&]<auto... Is>(std::index_sequence<Is...>) constexpr->Tensor { return {(get<Is>(tensor) / scalar)...}; }
-    (std::make_index_sequence<dimension_v<Tensor, 0>>{});
+  return [&]<auto... Is>(std::index_sequence<Is...>) constexpr -> Tensor {
+    return {(get<Is>(tensor) / scalar)...};
+  }(std::make_index_sequence<dimension_v<Tensor, 0>>{});
 }
 
 template <TensorShaped Tensor, ScalarShaped Scalar>
 constexpr auto operator/(Scalar scalar, const Tensor &tensor) {
-    return [&]<auto... Is>(std::index_sequence<Is...>) constexpr->Tensor { return {(scalar / get<Is>(tensor))...}; }
-    (std::make_index_sequence<dimension_v<Tensor, 0>>{});
+  return [&]<auto... Is>(std::index_sequence<Is...>) constexpr -> Tensor {
+    return {(scalar / get<Is>(tensor))...};
+  }(std::make_index_sequence<dimension_v<Tensor, 0>>{});
 }
 
 // ================================================================
@@ -217,19 +229,19 @@ constexpr auto operator/(Scalar scalar, const Tensor &tensor) {
 
 template <TensorShaped Tensor>
 constexpr auto sum(const Tensor &tensor) {
-    return std::reduce(std::begin(tensor), std::end(tensor), element_t<Tensor, 0>{0}, std::plus<element_t<Tensor, 0>>());
+  return std::reduce(std::begin(tensor), std::end(tensor), element_t<Tensor, 0>{0}, std::plus<element_t<Tensor, 0>>());
 }
 
 template <TensorShaped Tensor>
 constexpr auto prod(const Tensor &tensor) {
-    return std::reduce(std::begin(tensor), std::end(tensor), element_t<Tensor, 0>{1}, std::multiplies<element_t<Tensor, 0>>());
+  return std::reduce(std::begin(tensor), std::end(tensor), element_t<Tensor, 0>{1}, std::multiplies<element_t<Tensor, 0>>());
 }
 
 template <TensorShaped Tensor1, TensorShaped Tensor2>
 constexpr auto dot(const Tensor1 &tensor_1, const Tensor2 &tensor_2)
-requires Broadcastable<Tensor1, Tensor2>
+  requires Broadcastable<Tensor1, Tensor2>
 {
-    return sum(tensor_1 * tensor_2);
+  return sum(tensor_1 * tensor_2);
 }
 
 // ================================================================
@@ -237,11 +249,11 @@ requires Broadcastable<Tensor1, Tensor2>
 
 template <TensorShaped Tensor1, TensorShaped Tensor2>
 constexpr auto cross(const Tensor1 &tensor_1, const Tensor2 &tensor_2) -> Tensor1
-requires(dimension_v<Tensor1, 0> == 3) && (dimension_v<Tensor2, 0> == 3)
+  requires(dimension_v<Tensor1, 0> == 3) && (dimension_v<Tensor2, 0> == 3)
 {
-    auto [x1, y1, z1] = tensor_1;
-    auto [x2, y2, z2] = tensor_2;
-    return {y1 * z2 - z1 * y2, z1 * x2 - x1 * z2, x1 * y2 - y1 * x2};
+  auto [x1, y1, z1] = tensor_1;
+  auto [x2, y2, z2] = tensor_2;
+  return {y1 * z2 - z1 * y2, z1 * x2 - x1 * z2, x1 * y2 - y1 * x2};
 }
 
 // ================================================================
@@ -249,17 +261,15 @@ requires(dimension_v<Tensor1, 0> == 3) && (dimension_v<Tensor2, 0> == 3)
 
 template <TensorShaped Tensor>
 constexpr auto transposed(const Tensor &tensor)
-requires(rank_v<Tensor> >= 2) && (dimension_v<Tensor, 0> == dimension_v<Tensor, 1>)
+  requires(rank_v<Tensor> >= 2) && (dimension_v<Tensor, 0> == dimension_v<Tensor, 1>)
 {
-    return [&]<auto... Js>(std::index_sequence<Js...>) constexpr {
-        return [&]<auto... Is>(std::index_sequence<Is...>) constexpr->Tensor {
-            return [column = [&]<auto J>(std::index_sequence<J>) constexpr->element_t<Tensor, 0> {
-                       return {get<J>(get<Is>(tensor))...};
-                   }]() constexpr -> Tensor { return {column(std::index_sequence<Js>{})...}; }();
-        }
-        (std::make_index_sequence<dimension_v<Tensor, 0>>{});
-    }
-    (std::make_index_sequence<dimension_v<Tensor, 1>>{});
+  return [&]<auto... Js>(std::index_sequence<Js...>) constexpr {
+    return [&]<auto... Is>(std::index_sequence<Is...>) constexpr -> Tensor {
+      return [column = [&]<auto J>(std::index_sequence<J>) constexpr -> element_t<Tensor, 0> {
+               return {get<J>(get<Is>(tensor))...};
+             }]() constexpr -> Tensor { return {column(std::index_sequence<Js>{})...}; }();
+    }(std::make_index_sequence<dimension_v<Tensor, 0>>{});
+  }(std::make_index_sequence<dimension_v<Tensor, 1>>{});
 }
 
 // ================================================================
@@ -274,12 +284,13 @@ constexpr auto normalized(const TensorShaped auto &tensor) { return tensor / nor
 
 template <typename Function, typename Tensor>
 constexpr auto elemwise(Function &&function, Tensor &&tensor) {
-    if constexpr (ScalarShaped<std::decay_t<Tensor>>) {
-        return std::forward<Function>(function)(std::forward<Tensor>(tensor));
-    } else {
-        return [&]<auto... Is>(std::index_sequence<Is...>) constexpr->std::decay_t<Tensor> { return {elemwise(function, get<Is>(tensor))...}; }
-        (std::make_index_sequence<dimension_v<std::decay_t<Tensor>, 0>>{});
-    }
+  if constexpr (ScalarShaped<std::decay_t<Tensor>>) {
+    return std::forward<Function>(function)(std::forward<Tensor>(tensor));
+  } else {
+    return [&]<auto... Is>(std::index_sequence<Is...>) constexpr -> std::decay_t<Tensor> {
+      return {elemwise(function, get<Is>(tensor))...};
+    }(std::make_index_sequence<dimension_v<std::decay_t<Tensor>, 0>>{});
+  }
 }
 
 }  // namespace pbpt::tensor

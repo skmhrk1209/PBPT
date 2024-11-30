@@ -8,11 +8,11 @@ namespace pbpt::material {
 
 template <typename... Materials>
 struct GenericMaterial : std::variant<Materials...> {
-    using std::variant<Materials...>::variant;
+  using std::variant<Materials...>::variant;
 
-    constexpr auto operator()(auto &&...args) const {
-        return std::visit([&](const auto &material) constexpr { return material(std::forward<decltype(args)>(args)...); }, *this);
-    }
+  constexpr auto operator()(auto &&...args) const {
+    return std::visit([&](const auto &material) constexpr { return material(std::forward<decltype(args)>(args)...); }, *this);
+  }
 };
 
 template <typename Scalar, template <typename, auto> typename Vector>
