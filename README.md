@@ -1,6 +1,8 @@
 # PBPT: Physically-Based Path Tracer
 
-A physically-based version of [*Ray Tracing in One Weekend*](https://raytracing.github.io/books/RayTracingInOneWeekend.html) with support for Constructive Solid Geometry (CSG).
+PBPT is a physically-based path tracer with support for Constructive Solid Geometry (CSG).
+
+The scene from [*Ray Tracing in One Weekend*](https://raytracing.github.io/books/RayTracingInOneWeekend.html) was rendered by PBPT as follows.
 
 <div align="center">
 <figure>
