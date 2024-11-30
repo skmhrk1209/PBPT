@@ -24,7 +24,7 @@ int main(int argc, char** argv) {
     boost::mpi::environment environment(argc, argv);
     boost::mpi::communicator communicator;
 
-    boost::program_options::options_description options_description("Monte-Carlo Path Tracer");
+    boost::program_options::options_description options_description("PBPT: Physically-Based Path Tracer");
     options_description.add_options()("image_width,W", boost::program_options::value<int>()->default_value(1000), "Image width")(
         "image_height,H", boost::program_options::value<int>()->default_value(1000), "Image height")(
         "num_samples,N", boost::program_options::value<int>()->default_value(1000), "Number of samples per pixel for Monte-Carlo")(

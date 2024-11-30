@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.0)
 
 project(
     pbpt
-    DESCRIPTION "PBPT: Physically Based Path Tracer"
+    DESCRIPTION "PBPT: Physically-Based Path Tracer"
     LANGUAGES CXX
 )
 
