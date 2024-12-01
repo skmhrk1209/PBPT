@@ -10,6 +10,7 @@
 #include <execution>
 #include <filesystem>
 #include <iostream>
+#include <random>
 #include <ranges>
 #include <string>
 #include <thread>
@@ -103,9 +104,9 @@ int main(int argc, char** argv) {
     boost::progress_display progress_display(num_samples);
 
     for (auto sample_index = 0; sample_index < num_samples; ++sample_index) {
-      pbpt::renderer::path_tracer<Scalar, pbpt::tensor::Vector>(pbpt::scene::weekend::object, pbpt::scene::weekend::camera,
-                                                                pbpt::scene::weekend::background, image_width, image_height, start_index, stop_index,
-                                                                bernoulli_p, random_seed + sample_index, image_writer);
+      pbpt::renderer::path_tracer<Scalar, pbpt::tensor::Vector, std::mt19937>(
+          pbpt::scene::weekend::object, pbpt::scene::weekend::camera, pbpt::scene::weekend::background, image_width, image_height, start_index,
+          stop_index, bernoulli_p, random_seed + sample_index, image_writer);
 
       communicator.barrier();
 
