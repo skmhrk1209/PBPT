@@ -1,5 +1,6 @@
 #pragma once
 
+#include <cmath>
 #include <cstdint>
 #include <fstream>
 
@@ -14,7 +15,7 @@ auto write_ppm(const auto &filename, const auto &colors, auto width, auto height
 
   for (const auto &color : colors) {
     for (const auto &component : color) {
-      ostream << +static_cast<std::uint8_t>(component * ((1 << 8) - 1)) << " ";
+      ostream << +static_cast<std::uint8_t>(std::clamp(component, 0.0, 1.0) * ((1 << 8) - 1)) << " ";
     }
     ostream << "\n";
   }
