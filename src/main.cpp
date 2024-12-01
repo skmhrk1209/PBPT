@@ -30,7 +30,7 @@ int main(int argc, char** argv) {
       "image_height,H", boost::program_options::value<int>()->default_value(1000), "Image height")(
       "num_samples,N", boost::program_options::value<int>()->default_value(1000), "Number of samples per pixel for Monte-Carlo")(
       "bernoulli_p,P", boost::program_options::value<float>()->default_value(0.99), "Continuation probability for Russian roulette")(
-      "random_seed,S", boost::program_options::value<int>()->default_value(__LINE__), "Random seed for Monte-Carlo sampling")(
+      "random_seed,S", boost::program_options::value<int>()->default_value(0), "Random seed for Monte-Carlo sampling")(
       "num_threads,T", boost::program_options::value<int>()->default_value(1), "Number of threads for OpenMP")("help,h", "Shows help");
 
   boost::program_options::variables_map variables_map;

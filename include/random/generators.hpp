@@ -27,7 +27,7 @@ struct LinearCongruentialGenerator {
   static constexpr T q = M / A;
   static constexpr T r = M % A;
 
-  T x;
+  T x = 0;
 };
 
 }  // namespace pbpt::random
