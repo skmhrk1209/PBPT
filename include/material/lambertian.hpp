@@ -31,7 +31,9 @@ struct Lambertian {
       /****************************************************************
        * PDF (Probability Density Function) for Importance Sampling
        ****************************************************************/
-      auto pdf = [&](const auto &in_direction) constexpr { return pbpt::tensor::dot(in_direction, normal) / std::numbers::pi; };
+      auto pdf = [&](const auto &in_direction) constexpr {
+        return pbpt::tensor::dot(in_direction, normal) / std::numbers::pi;
+      };
       /****************************************************************
        * Importance Sampling for Monte Carlo
        ****************************************************************/

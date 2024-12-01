@@ -7,7 +7,9 @@
 
 namespace pbpt::material {
 
-constexpr auto reflect(const auto &incident, const auto &normal) { return 2.0 * pbpt::tensor::dot(incident, normal) * normal - incident; }
+constexpr auto reflect(const auto &incident, const auto &normal) {
+  return 2.0 * pbpt::tensor::dot(incident, normal) * normal - incident;
+}
 
 constexpr auto refract(const auto &incident, const auto &normal, auto refractive_index) {
   auto parallel = (pbpt::tensor::dot(incident, normal) * normal - incident) / refractive_index;

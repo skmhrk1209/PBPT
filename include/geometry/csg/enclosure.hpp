@@ -29,7 +29,8 @@ struct Enclosure : std::tuple<Geometries...> {
               occupations.pop();
             }
           }(std::get<Is>(*this)),
-          0)...);
+          0
+      )...);
     }(std::make_index_sequence<sizeof...(Geometries)>{});
 
     if (min_intersection && max_intersection) {

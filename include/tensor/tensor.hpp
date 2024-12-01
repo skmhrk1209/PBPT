@@ -48,7 +48,8 @@ template <typename T, auto I>
 struct dimension : std::integral_constant<std::size_t, 0> {};
 
 template <template <typename, auto> typename Array, typename T, auto... Ns, auto I>
-struct dimension<GenericTensor<Array, T, Ns...>, I> : std::integral_constant<std::size_t, std::get<I>(std::make_tuple(Ns...))> {};
+struct dimension<GenericTensor<Array, T, Ns...>, I>
+    : std::integral_constant<std::size_t, std::get<I>(std::make_tuple(Ns...))> {};
 
 template <typename T, auto I>
 inline constexpr auto dimension_v = dimension<T, I>::value;
@@ -234,7 +235,9 @@ constexpr auto sum(const Tensor &tensor) {
 
 template <TensorShaped Tensor>
 constexpr auto prod(const Tensor &tensor) {
-  return std::reduce(std::begin(tensor), std::end(tensor), element_t<Tensor, 0>{1}, std::multiplies<element_t<Tensor, 0>>());
+  return std::reduce(
+      std::begin(tensor), std::end(tensor), element_t<Tensor, 0>{1}, std::multiplies<element_t<Tensor, 0>>()
+  );
 }
 
 template <TensorShaped Tensor1, TensorShaped Tensor2>
@@ -298,9 +301,11 @@ constexpr auto elemwise(Function &&function, Tensor &&tensor) {
 namespace std {  // just for structure biding
 
 template <template <typename, auto> typename Array, typename T, auto... Ns>
-struct tuple_size<pbpt::tensor::GenericTensor<Array, T, Ns...>> : pbpt::tensor::dimension<pbpt::tensor::GenericTensor<Array, T, Ns...>, 0> {};
+struct tuple_size<pbpt::tensor::GenericTensor<Array, T, Ns...>>
+    : pbpt::tensor::dimension<pbpt::tensor::GenericTensor<Array, T, Ns...>, 0> {};
 
 template <auto I, template <typename, auto> typename Array, typename T, auto... Ns>
-struct tuple_element<I, pbpt::tensor::GenericTensor<Array, T, Ns...>> : pbpt::tensor::element<pbpt::tensor::GenericTensor<Array, T, Ns...>, 0> {};
+struct tuple_element<I, pbpt::tensor::GenericTensor<Array, T, Ns...>>
+    : pbpt::tensor::element<pbpt::tensor::GenericTensor<Array, T, Ns...>, 0> {};
 
 }  // namespace std

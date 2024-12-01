@@ -19,7 +19,8 @@ constexpr decltype(auto) curry(auto &&function) {
     if constexpr (std::is_invocable_v<decltype(function), decltype(args1)...>) {
       return std::invoke(std::move(function), std::forward<decltype(args1)>(args1)...);
     } else {
-      return curry([function = std::move(function), ... args1 = std::forward<decltype(args1)>(args1)](auto &&...args2) constexpr {
+      return curry([function = std::move(function),
+                    ... args1 = std::forward<decltype(args1)>(args1)](auto &&...args2) constexpr {
         return std::invoke(std::move(function), std::move(args1)..., std::forward<decltype(args2)>(args2)...);
       });
     }

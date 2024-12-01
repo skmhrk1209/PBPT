@@ -34,7 +34,9 @@ int main(int argc, char** argv) {
       "num_threads,T", boost::program_options::value<int>()->default_value(1), "Number of threads for OpenMP")("help,h", "Shows help");
 
   boost::program_options::variables_map variables_map;
-  boost::program_options::store(boost::program_options::parse_command_line(argc, argv, options_description), variables_map);
+  boost::program_options::store(
+      boost::program_options::parse_command_line(argc, argv, options_description), variables_map
+  );
   boost::program_options::notify(variables_map);
 
   if (variables_map.count("help") && !communicator.rank()) {
@@ -91,9 +93,12 @@ int main(int argc, char** argv) {
 
     auto image_writer = [&](auto global_index, const auto& color) constexpr {
       auto local_index = global_index - start_index;
-      auto prev_color = pbpt::tensor::elemwise(pbpt::math::square<Scalar>, pbpt::tensor::Vector<Scalar, 3>(colors[local_index]));
-      auto next_color = pbpt::tensor::elemwise(pbpt::math::sqrt<Scalar>,
-                                               (prev_color * rendered_samples[local_index] + color) / (rendered_samples[local_index] + 1));
+      auto prev_color =
+          pbpt::tensor::elemwise(pbpt::math::square<Scalar>, pbpt::tensor::Vector<Scalar, 3>(colors[local_index]));
+      auto next_color = pbpt::tensor::elemwise(
+          pbpt::math::sqrt<Scalar>,
+          (prev_color * rendered_samples[local_index] + color) / (rendered_samples[local_index] + 1)
+      );
       colors[local_index] = next_color;
       ++rendered_samples[local_index];
     };
@@ -105,8 +110,9 @@ int main(int argc, char** argv) {
 
     for (auto sample_index = 0; sample_index < num_samples; ++sample_index) {
       pbpt::renderer::path_tracer<Scalar, pbpt::tensor::Vector, std::mt19937>(
-          pbpt::scene::weekend::object, pbpt::scene::weekend::camera, pbpt::scene::weekend::background, image_width, image_height, start_index,
-          stop_index, bernoulli_p, random_seed + sample_index, image_writer);
+          pbpt::scene::weekend::object, pbpt::scene::weekend::camera, pbpt::scene::weekend::background, image_width,
+          image_height, start_index, stop_index, bernoulli_p, random_seed + sample_index, image_writer
+      );
 
       communicator.barrier();
 

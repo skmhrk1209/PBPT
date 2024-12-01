@@ -35,8 +35,12 @@ struct Intersection : std::pair<Scalar, Surface<NormalEvaluator, MaterialReferen
 };
 
 template <typename Scalar, typename NormalEvaluator, typename MaterialReference>
-struct Occupation : std::pair<Intersection<Scalar, NormalEvaluator, MaterialReference>, Intersection<Scalar, NormalEvaluator, MaterialReference>> {
-  using std::pair<Intersection<Scalar, NormalEvaluator, MaterialReference>, Intersection<Scalar, NormalEvaluator, MaterialReference>>::pair;
+struct Occupation : std::pair<
+                        Intersection<Scalar, NormalEvaluator, MaterialReference>,
+                        Intersection<Scalar, NormalEvaluator, MaterialReference>> {
+  using std::pair<
+      Intersection<Scalar, NormalEvaluator, MaterialReference>,
+      Intersection<Scalar, NormalEvaluator, MaterialReference>>::pair;
 
   constexpr decltype(auto) min() & { return std::get<0>(*this); }
   constexpr decltype(auto) min() && { return std::get<0>(*this); }
@@ -51,7 +55,8 @@ struct Occupation : std::pair<Intersection<Scalar, NormalEvaluator, MaterialRefe
 
 using OccupationComparator = decltype([](const auto& occupation_1, const auto& occupation_2) constexpr {
   return occupation_1.min().distance() > occupation_2.min().distance() ||
-         (!(occupation_2.min().distance() > occupation_1.min().distance()) && occupation_1.max().distance() > occupation_2.max().distance());
+         (!(occupation_2.min().distance() > occupation_1.min().distance()) &&
+          occupation_1.max().distance() > occupation_2.max().distance());
 });
 
 }  // namespace pbpt::geometry

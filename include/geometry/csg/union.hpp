@@ -15,10 +15,11 @@ struct Union : std::pair<Geometry1, Geometry2> {
     decltype(occupations_1) occupations;
 
     auto invert_normal = [&]<typename Intersection>(const Intersection &intersection) constexpr -> Intersection {
-      auto inverted_normal_evaluator = [normal_evaluator = intersection.surface().normal_evaluator()](const auto &position) constexpr {
-        return -normal_evaluator(position);
-      };
-      typename Intersection::second_type surface(inverted_normal_evaluator, intersection.surface().material_reference());
+      auto inverted_normal_evaluator = [normal_evaluator = intersection.surface().normal_evaluator(
+                                        )](const auto &position) constexpr { return -normal_evaluator(position); };
+      typename Intersection::second_type surface(
+          inverted_normal_evaluator, intersection.surface().material_reference()
+      );
       return {intersection.distance(), std::move(surface)};
     };
 
@@ -108,7 +109,9 @@ struct Union : std::pair<Geometry1, Geometry2> {
 
 template <typename Geometry1, typename Geometry2>
 constexpr auto make_union(Geometry1 &&geometry_1, Geometry2 &&geometry_2) {
-  return Union<std::decay_t<Geometry1>, std::decay_t<Geometry2>>(std::forward<Geometry1>(geometry_1), std::forward<Geometry2>(geometry_2));
+  return Union<std::decay_t<Geometry1>, std::decay_t<Geometry2>>(
+      std::forward<Geometry1>(geometry_1), std::forward<Geometry2>(geometry_2)
+  );
 }
 
 }  // namespace pbpt::geometry::csg

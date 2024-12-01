@@ -7,14 +7,17 @@
 
 namespace pbpt::optics {
 
-template <typename Scalar = double, template <typename, auto> typename Vector = pbpt::tensor::Vector,
-          template <typename, auto, auto> typename Matrix = pbpt::tensor::Matrix,
-          typename ResponseFunction = decltype([](const Vector<Scalar, 3> &, const Vector<Scalar, 3> &) -> Scalar {})>
+template <
+    typename Scalar = double, template <typename, auto> typename Vector = pbpt::tensor::Vector,
+    template <typename, auto, auto> typename Matrix = pbpt::tensor::Matrix,
+    typename ResponseFunction = decltype([](const Vector<Scalar, 3> &, const Vector<Scalar, 3> &) -> Scalar {})>
 struct Camera {
   constexpr Camera() = default;
 
-  constexpr Camera(Scalar vertical_fov, Scalar aspect_ratio, Scalar focal_distance, Scalar aperture_radius, ResponseFunction response_function,
-                   const Vector<Scalar, 3> &position, const Matrix<Scalar, 3, 3> &orientation)
+  constexpr Camera(
+      Scalar vertical_fov, Scalar aspect_ratio, Scalar focal_distance, Scalar aperture_radius,
+      ResponseFunction response_function, const Vector<Scalar, 3> &position, const Matrix<Scalar, 3, 3> &orientation
+  )
       : m_vertical_fov(vertical_fov),
         m_aspect_ratio(aspect_ratio),
         m_focal_distance(focal_distance),
@@ -23,8 +26,10 @@ struct Camera {
         m_position(position),
         m_orientation(orientation) {}
 
-  constexpr Camera(Scalar vertical_fov, Scalar aspect_ratio, Scalar focal_distance, Scalar aperture_radius, ResponseFunction response_function,
-                   Vector<Scalar, 3> &&position, Matrix<Scalar, 3, 3> &&orientation)
+  constexpr Camera(
+      Scalar vertical_fov, Scalar aspect_ratio, Scalar focal_distance, Scalar aperture_radius,
+      ResponseFunction response_function, Vector<Scalar, 3> &&position, Matrix<Scalar, 3, 3> &&orientation
+  )
       : m_vertical_fov(vertical_fov),
         m_aspect_ratio(aspect_ratio),
         m_focal_distance(focal_distance),

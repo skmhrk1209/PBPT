@@ -16,8 +16,10 @@ constexpr auto for_each_impl(auto &&tuple, auto &&function, std::index_sequence<
 
 // Apply a function to each element of a tuple.
 constexpr auto for_each(auto &&tuple, auto &&function) {
-  for_each_impl(std::forward<decltype(tuple)>(tuple), std::forward<decltype(function)>(function),
-                std::make_index_sequence<std::tuple_size_v<decltype(tuple)>>());
+  for_each_impl(
+      std::forward<decltype(tuple)>(tuple), std::forward<decltype(function)>(function),
+      std::make_index_sequence<std::tuple_size_v<decltype(tuple)>>()
+  );
 }
 
 }  // namespace pbpt

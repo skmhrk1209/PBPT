@@ -32,12 +32,15 @@ struct Dielectric {
           /****************************************************************
            * Importance Sampling for Monte Carlo
            ****************************************************************/
-          auto sampler = [&](const auto &out_position, const auto &out_direction) constexpr { return reflect(out_direction, normal); };
+          auto sampler = [&](const auto &out_position, const auto &out_direction) constexpr {
+            return reflect(out_direction, normal);
+          };
           /****************************************************************
            * Rendering Equation
            * Lo := E(wi ~ CDF(wi))[BRDF(x, wi, wo) * Li * (wi · n) / PDF(wi)]
            ****************************************************************/
-          auto shader = [&](const auto &out_position, const auto &out_direction, const auto &in_direction) constexpr -> Vector<Scalar, 3> {
+          auto shader = [&](const auto &out_position, const auto &out_direction,
+                            const auto &in_direction) constexpr -> Vector<Scalar, 3> {
             return {fresnel_reflectance, fresnel_reflectance, fresnel_reflectance};
           };
           auto in_position = out_position + numbers::epsilon * normal;
@@ -57,7 +60,8 @@ struct Dielectric {
            * Rendering Equation
            * Lo := E(wi ~ CDF(wi))[BRDF(x, wi, wo) * Li * (wi · n) / PDF(wi)]
            ****************************************************************/
-          auto shader = [&](const auto &out_position, const auto &out_direction, const auto &in_direction) constexpr -> Vector<Scalar, 3> {
+          auto shader = [&](const auto &out_position, const auto &out_direction,
+                            const auto &in_direction) constexpr -> Vector<Scalar, 3> {
             auto transmittance = (1.0 - fresnel_reflectance) * pbpt::math::square(refractive_index);
             return {transmittance, transmittance, transmittance};
           };

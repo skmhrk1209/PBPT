@@ -12,8 +12,9 @@
 
 namespace pbpt::geometry::primitive {
 
-template <typename Scalar = double, template <typename, auto> typename Vector = pbpt::tensor::Vector,
-          template <typename, template <typename, auto> typename> typename Material = pbpt::material::Material>
+template <
+    typename Scalar = double, template <typename, auto> typename Vector = pbpt::tensor::Vector,
+    template <typename, template <typename, auto> typename> typename Material = pbpt::material::Material>
 struct Cylinder {
   constexpr Cylinder() = default;
   constexpr Cylinder(Scalar height, const Vector<Scalar, 2> &radii, const Material<Scalar, Vector> &material)
@@ -72,8 +73,9 @@ struct Cylinder {
     };
     auto cylinder_normal = [this](const auto &position) constexpr -> Vector<Scalar, 3> {
       auto [position_x, position_y, position_z] = position;
-      auto [normal_z, normal_x] =
-          pbpt::tensor::normalized(Vector<Scalar, 2>{position_z, position_x} / pbpt::tensor::elemwise(pbpt::math::square<Scalar>, m_radii));
+      auto [normal_z, normal_x] = pbpt::tensor::normalized(
+          Vector<Scalar, 2>{position_z, position_x} / pbpt::tensor::elemwise(pbpt::math::square<Scalar>, m_radii)
+      );
       return Vector<Scalar, 3>{normal_x, 0.0, normal_z};
     };
 
@@ -155,8 +157,9 @@ struct Cylinder {
   Material<Scalar, Vector> m_material;
 };
 
-template <typename Scalar = double, template <typename, auto> typename Vector = pbpt::tensor::Vector,
-          template <typename, template <typename, auto> typename> typename Material = pbpt::material::Material>
+template <
+    typename Scalar = double, template <typename, auto> typename Vector = pbpt::tensor::Vector,
+    template <typename, template <typename, auto> typename> typename Material = pbpt::material::Material>
 constexpr auto make_cylinder(auto &&...args) {
   return Cylinder<Scalar, Vector, Material>(std::forward<decltype(args)>(args)...);
 }

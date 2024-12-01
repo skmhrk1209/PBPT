@@ -12,12 +12,15 @@
 
 namespace pbpt::geometry::primitive {
 
-template <typename Scalar = double, template <typename, auto> typename Vector = pbpt::tensor::Vector,
-          template <typename, template <typename, auto> typename> typename Material = pbpt::material::Material>
+template <
+    typename Scalar = double, template <typename, auto> typename Vector = pbpt::tensor::Vector,
+    template <typename, template <typename, auto> typename> typename Material = pbpt::material::Material>
 struct Ellipsoid {
   constexpr Ellipsoid() = default;
-  constexpr Ellipsoid(const Vector<Scalar, 3> &radii, const Material<Scalar, Vector> &material) : m_radii(radii), m_material(material) {}
-  constexpr Ellipsoid(Vector<Scalar, 3> &&radii, Material<Scalar, Vector> &&material) : m_radii(std::move(radii)), m_material(std::move(material)) {}
+  constexpr Ellipsoid(const Vector<Scalar, 3> &radii, const Material<Scalar, Vector> &material)
+      : m_radii(radii), m_material(material) {}
+  constexpr Ellipsoid(Vector<Scalar, 3> &&radii, Material<Scalar, Vector> &&material)
+      : m_radii(std::move(radii)), m_material(std::move(material)) {}
 
   constexpr auto &radii() & { return m_radii; }
   constexpr const auto &radii() const & { return m_radii; }
@@ -73,8 +76,9 @@ struct Ellipsoid {
   Material<Scalar, Vector> m_material;
 };
 
-template <typename Scalar = double, template <typename, auto> typename Vector = pbpt::tensor::Vector,
-          template <typename, template <typename, auto> typename> typename Material = pbpt::material::Material>
+template <
+    typename Scalar = double, template <typename, auto> typename Vector = pbpt::tensor::Vector,
+    template <typename, template <typename, auto> typename> typename Material = pbpt::material::Material>
 constexpr auto make_ellipsoid(auto &&...args) {
   return Ellipsoid<Scalar, Vector, Material>(std::forward<decltype(args)>(args)...);
 }

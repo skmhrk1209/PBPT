@@ -13,12 +13,15 @@
 
 namespace pbpt::geometry::primitive {
 
-template <typename Scalar = double, template <typename, auto> typename Vector = pbpt::tensor::Vector,
-          template <typename, template <typename, auto> typename> typename Material = pbpt::material::Material>
+template <
+    typename Scalar = double, template <typename, auto> typename Vector = pbpt::tensor::Vector,
+    template <typename, template <typename, auto> typename> typename Material = pbpt::material::Material>
 struct Plane {
   constexpr Plane() = default;
-  constexpr Plane(const Vector<Scalar, 2> &radii, const Material<Scalar, Vector> &material) : m_radii(radii), m_material(material) {}
-  constexpr Plane(Vector<Scalar, 2> &&radii, Material<Scalar, Vector> &&material) : m_radii(std::move(radii)), m_material(std::move(material)) {}
+  constexpr Plane(const Vector<Scalar, 2> &radii, const Material<Scalar, Vector> &material)
+      : m_radii(radii), m_material(material) {}
+  constexpr Plane(Vector<Scalar, 2> &&radii, Material<Scalar, Vector> &&material)
+      : m_radii(std::move(radii)), m_material(std::move(material)) {}
 
   constexpr auto &radii() & { return m_radii; }
   constexpr const auto &radii() const & { return m_radii; }
@@ -69,8 +72,9 @@ struct Plane {
   Material<Scalar, Vector> m_material;
 };
 
-template <typename Scalar = double, template <typename, auto> typename Vector = pbpt::tensor::Vector,
-          template <typename, template <typename, auto> typename> typename Material = pbpt::material::Material>
+template <
+    typename Scalar = double, template <typename, auto> typename Vector = pbpt::tensor::Vector,
+    template <typename, template <typename, auto> typename> typename Material = pbpt::material::Material>
 constexpr auto make_plane(auto &&...args) {
   return Plane<Scalar, Vector, Material>(std::forward<decltype(args)>(args)...);
 }

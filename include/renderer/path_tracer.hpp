@@ -10,10 +10,13 @@
 
 namespace pbpt::renderer {
 
-template <typename Scalar = double, template <typename, auto> typename Vector = pbpt::tensor::Vector,
-          typename Generator = pbpt::random::LinearCongruentialGenerator<>>
-constexpr auto path_tracer(const auto &object, const auto &camera, auto background, auto image_width, auto image_height, auto start_index,
-                           auto stop_index, auto bernoulli_p, auto random_seed, auto &image_writer) {
+template <
+    typename Scalar = double, template <typename, auto> typename Vector = pbpt::tensor::Vector,
+    typename Generator = pbpt::random::LinearCongruentialGenerator<>>
+constexpr auto path_tracer(
+    const auto &object, const auto &camera, auto background, auto image_width, auto image_height, auto start_index,
+    auto stop_index, auto bernoulli_p, auto random_seed, auto &image_writer
+) {
 #ifdef _OPENMP
 #pragma omp parallel for
 #endif
@@ -37,9 +40,11 @@ constexpr auto path_tracer(const auto &object, const auto &camera, auto backgrou
 
       if (occupations.empty()) return background(ray);
 
-      const auto &intersection = occupations.top().min().distance() > 0 ? occupations.top().min() : occupations.top().max();
+      const auto &intersection =
+          occupations.top().min().distance() > 0 ? occupations.top().min() : occupations.top().max();
 
-      return [&, ray = ray.advanced(intersection.distance()), &normal_evaluator = intersection.surface().normal_evaluator(),
+      return [&, ray = ray.advanced(intersection.distance()),
+              &normal_evaluator = intersection.surface().normal_evaluator(),
               &material_reference = intersection.surface().material_reference()]() constexpr {
         auto normal = normal_evaluator(ray.position());
         auto [radiance, traced_ray] = material_reference(ray, normal, generator);

@@ -31,16 +31,22 @@ struct Ray {
   constexpr auto at(auto distance) const { return m_position + m_direction * distance; }
 
   constexpr auto advance(auto distance) { m_position = m_position + m_direction * distance; }
-  constexpr auto advanced(auto distance) const -> Ray<Scalar, Vector> { return {m_position + m_direction * distance, m_direction, m_weight}; }
+  constexpr auto advanced(auto distance) const -> Ray<Scalar, Vector> {
+    return {m_position + m_direction * distance, m_direction, m_weight};
+  }
 
   constexpr auto translate(const auto &translation) { m_position = m_position + translation; }
-  constexpr auto translated(const auto &translation) const -> Ray<Scalar, Vector> { return {m_position + translation, m_direction, m_weight}; }
+  constexpr auto translated(const auto &translation) const -> Ray<Scalar, Vector> {
+    return {m_position + translation, m_direction, m_weight};
+  }
 
   constexpr auto rotate(const auto &rotation) {
     m_position = rotation % m_position;
     m_direction = rotation % m_direction;
   }
-  constexpr auto rotated(const auto &rotation) const -> Ray<Scalar, Vector> { return {rotation % m_position, rotation % m_direction, m_weight}; }
+  constexpr auto rotated(const auto &rotation) const -> Ray<Scalar, Vector> {
+    return {rotation % m_position, rotation % m_direction, m_weight};
+  }
 
  private:
   Vector<Scalar, 3> m_position;

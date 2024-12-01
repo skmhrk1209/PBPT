@@ -13,7 +13,8 @@ template <typename Scalar = double, template <typename, auto> typename Vector = 
 struct Metal {
   constexpr Metal() = default;
   constexpr Metal(const Vector<std::complex<Scalar>, 3> &refractive_index) : m_refractive_index(refractive_index) {}
-  constexpr Metal(Vector<std::complex<Scalar>, 3> &&refractive_index) : m_refractive_index(std::move(refractive_index)) {}
+  constexpr Metal(Vector<std::complex<Scalar>, 3> &&refractive_index)
+      : m_refractive_index(std::move(refractive_index)) {}
 
   constexpr auto &refractive_index() & { return m_refractive_index; }
   constexpr const auto &refractive_index() const & { return m_refractive_index; }
@@ -25,14 +26,18 @@ struct Metal {
       /****************************************************************
        * Importance Sampling for Monte Carlo
        ****************************************************************/
-      auto sampler = [&](const auto &out_position, const auto &out_direction) constexpr { return reflect(out_direction, normal); };
+      auto sampler = [&](const auto &out_position, const auto &out_direction) constexpr {
+        return reflect(out_direction, normal);
+      };
       /****************************************************************
        * Rendering Equation
        * Lo := E(wi ~ CDF(wi))[BRDF(x, wi, wo) * Li * (wi · n) / PDF(wi)]
        ****************************************************************/
-      auto shader = [&](const auto &out_position, const auto &out_direction, const auto &in_direction) constexpr -> Vector<Scalar, 3> {
-        auto complex_reflectance =
-            pbpt::tensor::elemwise(pbpt::math::square<std::complex<Scalar>>, (1.0 - m_refractive_index) / (1.0 + m_refractive_index));
+      auto shader = [&](const auto &out_position, const auto &out_direction,
+                        const auto &in_direction) constexpr -> Vector<Scalar, 3> {
+        auto complex_reflectance = pbpt::tensor::elemwise(
+            pbpt::math::square<std::complex<Scalar>>, (1.0 - m_refractive_index) / (1.0 + m_refractive_index)
+        );
         auto specular_reflectance = [&]<auto... Is>(std::index_sequence<Is...>) -> Vector<Scalar, 3> {
           return {std::abs(pbpt::tensor::get<Is>(complex_reflectance))...};
         }(std::make_index_sequence<pbpt::tensor::dimension_v<decltype(complex_reflectance), 0>>{});

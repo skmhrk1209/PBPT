@@ -83,7 +83,9 @@ struct Intersection : std::pair<Geometry1, Geometry2> {
 
 template <typename Geometry1, typename Geometry2>
 constexpr auto make_intersection(Geometry1 &&geometry_1, Geometry2 &&geometry_2) {
-  return Intersection<std::decay_t<Geometry1>, std::decay_t<Geometry2>>(std::forward<Geometry1>(geometry_1), std::forward<Geometry2>(geometry_2));
+  return Intersection<std::decay_t<Geometry1>, std::decay_t<Geometry2>>(
+      std::forward<Geometry1>(geometry_1), std::forward<Geometry2>(geometry_2)
+  );
 }
 
 }  // namespace pbpt::geometry::csg
