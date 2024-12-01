@@ -30,7 +30,7 @@ int main(int argc, char** argv) {
       "image_height,H", boost::program_options::value<int>()->default_value(1000), "Image height")(
       "num_samples,N", boost::program_options::value<int>()->default_value(1000), "Number of samples per pixel for Monte-Carlo")(
       "bernoulli_p,P", boost::program_options::value<float>()->default_value(0.99), "Continuation probability for Russian roulette")(
-      "random_seed,S", boost::program_options::value<int>()->default_value(__LINE__), "Random seed for Monte-Carlo sampling")(
+      "random_seed,S", boost::program_options::value<int>()->default_value(0), "Random seed for Monte-Carlo sampling")(
       "num_threads,T", boost::program_options::value<int>()->default_value(1), "Number of threads for OpenMP")("help,h", "Shows help");
 
   boost::program_options::variables_map variables_map;
@@ -77,13 +77,14 @@ int main(int argc, char** argv) {
   communicator.barrier();
 
   auto num_total_pixels = image_width * image_height;
-  auto num_remaining_pixels = num_total_pixels % communicator.size();
 
   auto num_split_pixels = num_total_pixels / communicator.size();
-  if (!communicator.rank()) num_split_pixels += num_remaining_pixels;
+  auto num_extra_pixels = num_total_pixels % communicator.size();
 
   auto start_index = num_split_pixels * communicator.rank();
-  if (communicator.rank()) start_index += num_remaining_pixels;
+
+  if (communicator.rank()) start_index += num_extra_pixels;
+  if (!communicator.rank()) num_split_pixels += num_extra_pixels;
 
   auto stop_index = start_index + num_split_pixels;
 
@@ -109,9 +110,10 @@ int main(int argc, char** argv) {
     boost::progress_display progress_display(num_samples);
 
     for (auto sample_index = 0; sample_index < num_samples; ++sample_index) {
+      auto sample_seed = random_seed + num_total_pixels * sample_index;
       pbpt::renderer::path_tracer<Scalar, pbpt::tensor::Vector, std::mt19937>(
           pbpt::scene::weekend::object, pbpt::scene::weekend::camera, pbpt::scene::weekend::background, image_width,
-          image_height, start_index, stop_index, bernoulli_p, random_seed + sample_index, image_writer
+          image_height, start_index, stop_index, bernoulli_p, sample_seed, image_writer
       );
 
       communicator.barrier();

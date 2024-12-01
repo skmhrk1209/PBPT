@@ -14,7 +14,7 @@ namespace pbpt::scene::weekend {
 
 inline constexpr auto object = []() constexpr {
   using namespace std::literals::complex_literals;
-  pbpt::random::LinearCongruentialGenerator<> generator(__LINE__);
+  pbpt::random::LinearCongruentialGenerator<> generator(1);
   return pbpt::geometry::csg::make_union(
       // ground sphere
       pbpt::geometry::transform::make_translation(

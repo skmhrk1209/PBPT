@@ -88,6 +88,7 @@ struct Camera {
     auto lens_normal = m_orientation % Vector<Scalar, 3>{0.0, 0.0, 1.0};
     auto response = m_response_function(in_direction, lens_normal);
     auto cos_theta = pbpt::tensor::dot(in_direction, lens_normal);
+    // reference: https://rayspace.xyz/CG/contents/DoF/
     auto weight = response * pbpt::math::pow(cos_theta, 4);
     return {std::move(in_position), std::move(in_direction), weight};
   }
