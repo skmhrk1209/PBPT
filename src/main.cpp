@@ -9,6 +9,7 @@
 #include <boost/serialization/vector.hpp>
 #include <execution>
 #include <filesystem>
+#include <functional>
 #include <iostream>
 #include <random>
 #include <ranges>
@@ -93,14 +94,17 @@ int main(int argc, char** argv) {
     std::vector<std::size_t> rendered_samples(num_split_pixels);
 
     auto image_writer = [&](auto global_index, const auto& color) constexpr {
+      using namespace std::placeholders;
       auto local_index = global_index - start_index;
-      auto prev_color =
+      auto cur_color =
+          pbpt::tensor::elemwise(std::bind(pbpt::math::clamp<Scalar, Scalar, Scalar>, _1, 0.0, 1.0), color);
+      auto old_color =
           pbpt::tensor::elemwise(pbpt::math::square<Scalar>, pbpt::tensor::Vector<Scalar, 3>(colors[local_index]));
-      auto next_color = pbpt::tensor::elemwise(
+      auto new_color = pbpt::tensor::elemwise(
           pbpt::math::sqrt<Scalar>,
-          (prev_color * rendered_samples[local_index] + color) / (rendered_samples[local_index] + 1)
+          (old_color * rendered_samples[local_index] + cur_color) / (rendered_samples[local_index] + 1)
       );
-      colors[local_index] = next_color;
+      colors[local_index] = new_color;
       ++rendered_samples[local_index];
     };
 
